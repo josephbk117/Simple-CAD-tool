@@ -14,6 +14,7 @@ public:
 	void addVertex(float x, float y, float z);
 	void display();
 	void updateMeshData();
+	void removeVertex(vec3* vertex, Model* model);
 	vec3* vertexAtViewportCoord(float x, float y, float z);
 private:
 	unsigned int VBO, VAO;

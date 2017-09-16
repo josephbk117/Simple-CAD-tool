@@ -21,6 +21,19 @@ void Model::updateMeshData()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Model::removeVertex(vec3* vertex, Model* model)
+{
+	std::cout << "\nVertex count = " << vertexData.size();
+	for (int i = 0; i < vertexData.size(); i++)
+	{
+		if (vertex == &vertexData[i])
+		{
+			vertexData.erase(vertexData.begin() + i);
+			break;
+		}
+	}
+}
+
 vec3 * Model::vertexAtViewportCoord(float x, float y, float z)
 {
 	for (int i = 0; i < vertexData.size(); i++)

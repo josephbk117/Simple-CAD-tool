@@ -20,6 +20,7 @@ void processInput(GLFWwindow * window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 Camera camera(glm::vec3(0.0f, 0.0f, -20.0f));
 float lastX = 500 / 2.0f;
@@ -52,6 +53,7 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetKeyCallback(window, keyboard_callback);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	GLenum err = glewInit();
@@ -137,14 +139,6 @@ void processInput(GLFWwindow * window)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);*/
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		currentInteractionMode = InteractionModes::ADDING_VERTICES;
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		currentInteractionMode = InteractionModes::CREATING_NEW_MODEL;
-	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-		currentInteractionMode = InteractionModes::EDITING_VERTICES;
-	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-		currentlyHeldVertex = nullptr;
 
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -162,6 +156,27 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		else
 			viewports[i]->setBorderColor(1, 1, 1);
 	}
+}
+void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		if (key == GLFW_KEY_Z)
+			currentInteractionMode = InteractionModes::ADDING_VERTICES;
+		if (key == GLFW_KEY_X)
+			currentInteractionMode = InteractionModes::CREATING_NEW_MODEL;
+		if (key == GLFW_KEY_C)
+		{
+			currentlyHeldVertex = nullptr;
+			currentInteractionMode = InteractionModes::EDITING_VERTICES;
+		}
+		if (key == GLFW_KEY_DELETE && action == GLFW_PRESS)
+		{
+			activeModel->removeVertex(currentlyHeldVertex, activeModel);
+			activeModel->updateMeshData();
+		}
+	}
+
 }
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -182,27 +197,40 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		else if (currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
 			//FOR NOW
+			//Should check one axis as optional for each one as some vertices may not have 0 as an position 
 			if (currentlyHeldVertex == nullptr)
 			{
+				activeViewport->getConvertedViewportCoord(x1, y1);
 				if (activeViewport == viewports[0])
-				{
-					std::cout << "\ncurrently held is null";
-					activeViewport->getConvertedViewportCoord(x1, y1);
 					currentlyHeldVertex = models[0]->vertexAtViewportCoord(x1, y1, 0);
-				}
 				if (activeViewport == viewports[2])
-				{
-					activeViewport->getConvertedViewportCoord(x1, y1);
 					currentlyHeldVertex = models[0]->vertexAtViewportCoord(0, y1, x1);
-				}
+				if (activeViewport == viewports[3])
+					currentlyHeldVertex = models[0]->vertexAtViewportCoord(y1, 0, x1);
 			}
 			else if (currentlyHeldVertex != nullptr)
 			{
 				std::cout << "\ncurrently held is not null";
 				activeViewport->getConvertedViewportCoord(x1, y1);
-				currentlyHeldVertex->x = x1;
-				currentlyHeldVertex->y = y1;
-				currentlyHeldVertex->z = currentlyHeldVertex->z;
+				if (activeViewport == viewports[0])
+				{
+					currentlyHeldVertex->x = x1;
+					currentlyHeldVertex->y = y1;
+					currentlyHeldVertex->z = currentlyHeldVertex->z;
+				}
+				else if (activeViewport == viewports[2])
+				{
+					currentlyHeldVertex->x = currentlyHeldVertex->x;
+					currentlyHeldVertex->y = y1;
+					currentlyHeldVertex->z = x1;
+				}
+				else if (activeViewport == viewports[3])
+				{
+					currentlyHeldVertex->x = y1;
+					currentlyHeldVertex->y = currentlyHeldVertex->y;
+					currentlyHeldVertex->z = x1;
+				}
+
 				activeModel->updateMeshData();
 				std::cout << "\new vertex position is " << x1 << " ," << y1;
 			}
