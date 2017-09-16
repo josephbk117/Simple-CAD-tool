@@ -7,6 +7,13 @@
 #include "Viewport.h"
 #include <vector>
 
+enum InteractionModes
+{
+	ADDING_VERTICES, CREATING_NEW_MODEL, EDITING_VERTICES
+};
+
+InteractionModes currentInteractionMode = InteractionModes::ADDING_VERTICES;
+
 void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void processInput(GLFWwindow * window);
@@ -29,6 +36,7 @@ std::vector<Model *> models;
 Model* activeModel;
 Viewport* activeViewport;
 Viewport* viewports[4];
+vec3* currentlyHeldVertex = nullptr;
 
 int main()
 {
@@ -44,7 +52,6 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
-
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	GLenum err = glewInit();
@@ -64,10 +71,10 @@ int main()
 	shader.addAttribute("aPos");
 	shader.linkShaders();
 
-	Viewport viewportBottomLeft(glm::vec2(0, 0), glm::vec2(250, 250), shader);
-	Viewport viewportTopLeft(glm::vec2(0, 250), glm::vec2(250, 250), shader);
-	Viewport viewportTopRight(glm::vec2(250, 250), glm::vec2(250, 250), shader);
-	Viewport viewportBottomRight(glm::vec2(250, 0), glm::vec2(250, 250), shader);
+	Viewport viewportBottomLeft(vec2(0, 0), vec2(250, 250), shader);
+	Viewport viewportTopLeft(vec2(0, 250), vec2(250, 250), shader);
+	Viewport viewportTopRight(vec2(250, 250), vec2(250, 250), shader);
+	Viewport viewportBottomRight(vec2(250, 0), vec2(250, 250), shader);
 
 	viewportBottomLeft.setViewportConvertion(-(500 / 4), (500 / 2) + (500 / 4));
 	viewportBottomRight.setViewportConvertion(-500 + (500 / 4), (500 / 2) + (500 / 4));
@@ -80,7 +87,7 @@ int main()
 	viewports[2] = &viewportTopRight;
 	viewports[3] = &viewportBottomRight;
 
-	camera.Position = glm::vec3(0, 0, 3);
+	camera.Position = vec3(0, 0, 3);
 
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -102,15 +109,15 @@ int main()
 		shader.setMat4("projection", projection);
 
 		viewportBottomLeft.show(glm::translate(glm::mat4(),
-				glm::vec3(0, 0, 30)), models);
+			glm::vec3(0, 0, 30)), models);
 		viewportTopRight.show(glm::rotate(glm::mat4(),
-				glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
+			glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
 				glm::vec3(30, 0, 0)), models);
 		viewportBottomRight.show(glm::rotate(glm::mat4(),
-				glm::radians(90.0f), glm::vec3(1, 0, 0))*glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
+			glm::radians(90.0f), glm::vec3(1, 0, 0))*glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
 				glm::vec3(0, 30, 0)), models);
 		viewportTopLeft.show(glm::rotate(glm::mat4(), (float)glfwGetTime(),
-				glm::vec3(2.2f, 3.4, 0.4f)) * glm::translate(glm::mat4(),
+			glm::vec3(2.2f, 3.4, 0.4f)) * glm::translate(glm::mat4(),
 				glm::vec3(30, 0, 0)), models);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -130,6 +137,14 @@ void processInput(GLFWwindow * window)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);*/
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		currentInteractionMode = InteractionModes::ADDING_VERTICES;
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		currentInteractionMode = InteractionModes::CREATING_NEW_MODEL;
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		currentInteractionMode = InteractionModes::EDITING_VERTICES;
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		currentlyHeldVertex = nullptr;
 
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -153,14 +168,45 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		float x1 = mouseData.x, y1 = mouseData.y;
-		activeViewport->getConvertedViewportCoord(x1, y1);
-		if (activeViewport == viewports[0])
-			activeModel->addVertex(x1, y1, 0);
-		else if (activeViewport == viewports[2])
-			activeModel->addVertex(0, y1, x1);
-		else if (activeViewport == viewports[3])
-			activeModel->addVertex(y1, 0, x1);
-		activeModel->updateMeshData();
+		if (currentInteractionMode == InteractionModes::ADDING_VERTICES)
+		{
+			activeViewport->getConvertedViewportCoord(x1, y1);
+			if (activeViewport == viewports[0])
+				activeModel->addVertex(x1, y1, 0);
+			else if (activeViewport == viewports[2])
+				activeModel->addVertex(0, y1, x1);
+			else if (activeViewport == viewports[3])
+				activeModel->addVertex(y1, 0, x1);
+			activeModel->updateMeshData();
+		}
+		else if (currentInteractionMode == InteractionModes::EDITING_VERTICES)
+		{
+			//FOR NOW
+			if (currentlyHeldVertex == nullptr)
+			{
+				if (activeViewport == viewports[0])
+				{
+					std::cout << "\ncurrently held is null";
+					activeViewport->getConvertedViewportCoord(x1, y1);
+					currentlyHeldVertex = models[0]->vertexAtViewportCoord(x1, y1, 0);
+				}
+				if (activeViewport == viewports[2])
+				{
+					activeViewport->getConvertedViewportCoord(x1, y1);
+					currentlyHeldVertex = models[0]->vertexAtViewportCoord(0, y1, x1);
+				}
+			}
+			else if (currentlyHeldVertex != nullptr)
+			{
+				std::cout << "\ncurrently held is not null";
+				activeViewport->getConvertedViewportCoord(x1, y1);
+				currentlyHeldVertex->x = x1;
+				currentlyHeldVertex->y = y1;
+				currentlyHeldVertex->z = currentlyHeldVertex->z;
+				activeModel->updateMeshData();
+				std::cout << "\new vertex position is " << x1 << " ," << y1;
+			}
+		}
 	}
 }
 

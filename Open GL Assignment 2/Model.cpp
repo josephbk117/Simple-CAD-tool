@@ -37,6 +37,7 @@ vec3 * Model::vertexAtViewportCoord(float x, float y, float z)
 			}
 		}
 	}
+	return nullptr;
 }
 
 void Model::addVertex(vec3 vertexPosition)
