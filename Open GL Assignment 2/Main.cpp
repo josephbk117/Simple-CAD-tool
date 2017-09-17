@@ -9,8 +9,10 @@
 
 enum InteractionModes
 {
-	ADDING_VERTICES, CREATING_NEW_MODEL, EDITING_VERTICES, MODEL_CYCLE_THROUGH
+	ADDING_VERTICES, EDITING_VERTICES, MODEL_CYCLE_THROUGH
 };
+
+bool showLocalSpace = false;
 
 InteractionModes currentInteractionMode = InteractionModes::ADDING_VERTICES;
 
@@ -39,6 +41,33 @@ Viewport* activeViewport;
 Viewport* viewports[4];
 vec3* currentlyHeldVertex = nullptr;
 int currentlyActiveModelIndex = 0;
+
+
+void drawSphere(float radius, unsigned int rings, unsigned int sectors)
+{
+	const float PI = 22.0f / 7.0f;
+	// x = x0 + r * cos(T) * sin(O)
+	// y = y0 + r * sin(T) * cos(O)
+	// z = z0 + r * cos(O)				0 <= T <= 2PI , 0 <= O <= PI
+	const float tInc = (2 * PI) / (float)rings;
+	const float oInc = PI / (float)sectors;
+	glBegin(GL_POINTS);
+	for (int r = 0; r < rings; r++)
+	{
+		for (int s = 0; s < sectors; s++)
+		{
+			float t = r * tInc;
+			float o = s * oInc;
+
+			float x, y, z;
+			x = radius * cos(t) * sin(o);
+			y = radius * sin(t) * cos(o);
+			z = radius * cos(o);
+			glVertex3f(x, y, z);
+		}
+	}
+	glEnd();
+}
 
 int main()
 {
@@ -112,16 +141,19 @@ int main()
 		shader.setMat4("projection", projection);
 
 		viewportBottomLeft.show(glm::translate(glm::mat4(),
-			glm::vec3(0, 0, 30)), models, currentlyActiveModelIndex);
+			glm::vec3(0, 0, 30)), models, currentlyActiveModelIndex, showLocalSpace);
 		viewportTopRight.show(glm::rotate(glm::mat4(),
 			glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
-				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex);
+				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex, showLocalSpace);
 		viewportBottomRight.show(glm::rotate(glm::mat4(),
 			glm::radians(90.0f), glm::vec3(1, 0, 0))*glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
-				glm::vec3(0, 30, 0)), models, currentlyActiveModelIndex);
+				glm::vec3(0, 30, 0)), models, currentlyActiveModelIndex, showLocalSpace);
+
 		viewportTopLeft.show(glm::rotate(glm::mat4(), (float)glfwGetTime(),
-			glm::vec3(2.2f, 3.4, 0.4f)) * glm::translate(glm::mat4(),
-				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex);
+			glm::vec3(1, 1, 1)) * glm::translate(glm::mat4(),
+				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex, showLocalSpace);
+
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -148,12 +180,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	mouseData.y = -(int)ypos;
 	for (int i = 0; i < 4; i++)
 	{
-		viewports[i]->setBorderColor(1, 0.5, 1);
+		viewports[i]->setBorderColor(0, 0.5, 1);
 		if (viewports[i]->isPointInViewport(mouseData.x, mouseData.y))
-		{
-			viewports[i]->setBorderColor(0, 0.5, 1);
 			activeViewport = viewports[i];
-		}
 		else
 			viewports[i]->setBorderColor(1, 1, 1);
 	}
@@ -190,7 +219,6 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		if (key == GLFW_KEY_X)
 		{
-			currentInteractionMode = InteractionModes::CREATING_NEW_MODEL;
 			models.push_back(activeModel = new Model);
 			currentlyActiveModelIndex = models.size() - 1;
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
@@ -204,6 +232,10 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		{
 			activeModel->removeVertex(currentlyHeldVertex, activeModel);
 			activeModel->updateMeshData();
+		}
+		if (key == GLFW_KEY_Q)
+		{
+			showLocalSpace = !showLocalSpace;
 		}
 		if (key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT)
 		{
