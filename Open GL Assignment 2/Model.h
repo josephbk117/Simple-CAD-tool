@@ -16,6 +16,7 @@ public:
 	void updateMeshData();
 	void removeVertex(vec3* vertex, Model* model);
 	vec3* vertexAtViewportCoord(float x, float y, float z);
+	bool containsVertexData();
 private:
 	unsigned int VBO, VAO;
 	std::vector<vec3> vertexData;

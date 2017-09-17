@@ -77,6 +77,11 @@ vec3 * Model::vertexAtViewportCoord(float x, float y, float z)
 	return nullptr;
 }
 
+bool Model::containsVertexData()
+{
+	return (vertexData.size() > 0) ? true : false;
+}
+
 void Model::addVertex(vec3 vertexPosition)
 {
 	vertexData.push_back(vertexPosition);

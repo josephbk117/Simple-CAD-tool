@@ -219,9 +219,12 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		if (key == GLFW_KEY_X)
 		{
-			models.push_back(activeModel = new Model);
-			currentlyActiveModelIndex = models.size() - 1;
-			currentInteractionMode = InteractionModes::ADDING_VERTICES;
+			if (activeModel->containsVertexData())
+			{
+				models.push_back(activeModel = new Model);
+				currentlyActiveModelIndex = models.size() - 1;
+				currentInteractionMode = InteractionModes::ADDING_VERTICES;
+			}
 		}
 		if (key == GLFW_KEY_C)
 		{
@@ -237,9 +240,9 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		{
 			showLocalSpace = !showLocalSpace;
 		}
-		if (key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT)
+		if (key == GLFW_KEY_N || key == GLFW_KEY_M)
 		{
-			currentlyActiveModelIndex = (key == GLFW_KEY_LEFT) ? currentlyActiveModelIndex - 1 : currentlyActiveModelIndex + 1;
+			currentlyActiveModelIndex = (key == GLFW_KEY_N) ? currentlyActiveModelIndex - 1 : currentlyActiveModelIndex + 1;
 			if (currentlyActiveModelIndex > models.size() - 1)
 				currentlyActiveModelIndex = 0;
 			else if (currentlyActiveModelIndex < 0)

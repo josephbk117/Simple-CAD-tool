@@ -25,13 +25,13 @@ void Viewport::show(const mat4 &viewMatrix, const std::vector<Model *> &models, 
 		if (i == activeModelIndex)
 		{
 			if (!showLocalSpace)
-				shader.setVec3("colour", glm::vec3(0.3, 0.95, 0.45));
+				shader.setVec3("colour", glm::vec3(0.7, 0.25, 0.85));
 			else
 				shader.setInt("togglePosColour", 1);
 		}
 		else
 		{
-			shader.setVec3("colour", glm::vec3(0.6, 0.85, 0.95));
+			shader.setVec3("colour", glm::vec3(0.2, 0.95, 0.95));
 			shader.setInt("togglePosColour", 0);
 		}
 		models[i]->display();
