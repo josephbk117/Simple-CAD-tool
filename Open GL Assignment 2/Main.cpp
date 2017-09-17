@@ -148,11 +148,9 @@ int main()
 		viewportBottomRight.show(glm::rotate(glm::mat4(),
 			glm::radians(90.0f), glm::vec3(1, 0, 0))*glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
 				glm::vec3(0, 30, 0)), models, currentlyActiveModelIndex, showLocalSpace);
-
 		viewportTopLeft.show(glm::rotate(glm::mat4(), (float)glfwGetTime(),
 			glm::vec3(1, 1, 1)) * glm::translate(glm::mat4(),
 				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex, showLocalSpace);
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -194,18 +192,15 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		{
 			currentlyHeldVertex->x = x1;
 			currentlyHeldVertex->y = y1;
-			currentlyHeldVertex->z = currentlyHeldVertex->z;
 		}
 		else if (activeViewport == viewports[2])
 		{
-			currentlyHeldVertex->x = currentlyHeldVertex->x;
 			currentlyHeldVertex->y = y1;
 			currentlyHeldVertex->z = x1;
 		}
 		else if (activeViewport == viewports[3])
 		{
 			currentlyHeldVertex->x = y1;
-			currentlyHeldVertex->y = currentlyHeldVertex->y;
 			currentlyHeldVertex->z = x1;
 		}
 		activeModel->updateMeshData();
@@ -245,7 +240,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			currentlyActiveModelIndex = (key == GLFW_KEY_N) ? currentlyActiveModelIndex - 1 : currentlyActiveModelIndex + 1;
 			if (currentlyActiveModelIndex > models.size() - 1)
 				currentlyActiveModelIndex = 0;
-			else if (currentlyActiveModelIndex < 0)
+			if (currentlyActiveModelIndex < 0)
 				currentlyActiveModelIndex = models.size() - 1;
 			activeModel = models[currentlyActiveModelIndex];
 		}

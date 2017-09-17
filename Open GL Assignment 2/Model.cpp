@@ -92,11 +92,12 @@ void Model::addVertex(float x, float y, float z)
 	vertexData.push_back(vec3(x, y, z));
 }
 
-void Model::display()
+void Model::display(bool showVertices)
 {
 	glPointSize(5);
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_POINTS, 0, vertexData.size());
+	if(showVertices)
+		glDrawArrays(GL_POINTS, 0, vertexData.size());
 	glDrawArrays(GL_LINE_STRIP, 0, vertexData.size());
 	glBindVertexArray(0);
 }
