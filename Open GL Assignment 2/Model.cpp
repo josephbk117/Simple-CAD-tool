@@ -33,16 +33,40 @@ void Model::removeVertex(vec3* vertex, Model* model)
 		}
 	}
 }
-
+/*
+Can pass argument as NULL , to ignore that axis
+*/
 vec3 * Model::vertexAtViewportCoord(float x, float y, float z)
 {
 	for (int i = 0; i < vertexData.size(); i++)
 	{
-		if (vertexData[i].x > x - 10 && vertexData[i].x < x + 10)
+		if (x == NULL)
 		{
 			if (vertexData[i].y > y - 10 && vertexData[i].y < y + 10)
 			{
 				if (vertexData[i].z > z - 10 && vertexData[i].z < z + 10)
+				{
+					return &vertexData[i];
+					break;
+				}
+			}
+		}
+		else if (y == NULL)
+		{
+			if (vertexData[i].x > x - 10 && vertexData[i].x < x + 10)
+			{
+				if (vertexData[i].z > z - 10 && vertexData[i].z < z + 10)
+				{
+					return &vertexData[i];
+					break;
+				}
+			}
+		}
+		else if (z == NULL)
+		{
+			if (vertexData[i].x > x - 10 && vertexData[i].x < x + 10)
+			{
+				if (vertexData[i].y > y - 10 && vertexData[i].y < y + 10)
 				{
 					return &vertexData[i];
 					break;

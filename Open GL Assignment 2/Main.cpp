@@ -9,7 +9,7 @@
 
 enum InteractionModes
 {
-	ADDING_VERTICES, CREATING_NEW_MODEL, EDITING_VERTICES
+	ADDING_VERTICES, CREATING_NEW_MODEL, EDITING_VERTICES,
 };
 
 InteractionModes currentInteractionMode = InteractionModes::ADDING_VERTICES;
@@ -156,6 +156,30 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		else
 			viewports[i]->setBorderColor(1, 1, 1);
 	}
+	float x1 = mouseData.x, y1 = mouseData.y;
+	if (currentlyHeldVertex != nullptr && currentInteractionMode == InteractionModes::EDITING_VERTICES)
+	{
+		activeViewport->getConvertedViewportCoord(x1, y1);
+		if (activeViewport == viewports[0])
+		{
+			currentlyHeldVertex->x = x1;
+			currentlyHeldVertex->y = y1;
+			currentlyHeldVertex->z = currentlyHeldVertex->z;
+		}
+		else if (activeViewport == viewports[2])
+		{
+			currentlyHeldVertex->x = currentlyHeldVertex->x;
+			currentlyHeldVertex->y = y1;
+			currentlyHeldVertex->z = x1;
+		}
+		else if (activeViewport == viewports[3])
+		{
+			currentlyHeldVertex->x = y1;
+			currentlyHeldVertex->y = currentlyHeldVertex->y;
+			currentlyHeldVertex->z = x1;
+		}
+		activeModel->updateMeshData();
+	}
 }
 void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -176,7 +200,6 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			activeModel->updateMeshData();
 		}
 	}
-
 }
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -196,43 +219,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		}
 		else if (currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
-			//FOR NOW
-			//Should check one axis as optional for each one as some vertices may not have 0 as an position 
 			if (currentlyHeldVertex == nullptr)
 			{
 				activeViewport->getConvertedViewportCoord(x1, y1);
 				if (activeViewport == viewports[0])
-					currentlyHeldVertex = models[0]->vertexAtViewportCoord(x1, y1, 0);
+					currentlyHeldVertex = activeModel->vertexAtViewportCoord(x1, y1, NULL);
 				if (activeViewport == viewports[2])
-					currentlyHeldVertex = models[0]->vertexAtViewportCoord(0, y1, x1);
+					currentlyHeldVertex = activeModel->vertexAtViewportCoord(NULL, y1, x1);
 				if (activeViewport == viewports[3])
-					currentlyHeldVertex = models[0]->vertexAtViewportCoord(y1, 0, x1);
-			}
-			else if (currentlyHeldVertex != nullptr)
-			{
-				std::cout << "\ncurrently held is not null";
-				activeViewport->getConvertedViewportCoord(x1, y1);
-				if (activeViewport == viewports[0])
-				{
-					currentlyHeldVertex->x = x1;
-					currentlyHeldVertex->y = y1;
-					currentlyHeldVertex->z = currentlyHeldVertex->z;
-				}
-				else if (activeViewport == viewports[2])
-				{
-					currentlyHeldVertex->x = currentlyHeldVertex->x;
-					currentlyHeldVertex->y = y1;
-					currentlyHeldVertex->z = x1;
-				}
-				else if (activeViewport == viewports[3])
-				{
-					currentlyHeldVertex->x = y1;
-					currentlyHeldVertex->y = currentlyHeldVertex->y;
-					currentlyHeldVertex->z = x1;
-				}
-
-				activeModel->updateMeshData();
-				std::cout << "\new vertex position is " << x1 << " ," << y1;
+					currentlyHeldVertex = activeModel->vertexAtViewportCoord(y1, NULL, x1);
 			}
 		}
 	}
