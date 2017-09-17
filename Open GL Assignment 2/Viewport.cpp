@@ -15,13 +15,19 @@ void Viewport::setViewMatrix(mat4 viewMatrix)
 	shader.setMat4("view", viewMatrix);
 }
 
-void Viewport::show(const mat4 &viewMatrix, const std::vector<Model *> &models)
+void Viewport::show(const mat4 &viewMatrix, const std::vector<Model *> &models,unsigned int activeModelIndex)
 {
 	glViewport(origin.x, origin.y, size.x, size.y);
 	shader.use();
 	shader.setMat4("view", viewMatrix);
 	for (int i = 0; i < models.size(); i++)
+	{
+		if(i == activeModelIndex)
+			shader.setVec3("colour", glm::vec3(0.4,0.8,0.2));
+		else
+			shader.setVec3("colour", glm::vec3(0.5, 0.4, 0.9));
 		models[i]->display();
+	}
 	shader.unuse();
 	drawBorder();
 }

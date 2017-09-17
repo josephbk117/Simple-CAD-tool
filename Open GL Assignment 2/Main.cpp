@@ -38,6 +38,7 @@ Model* activeModel;
 Viewport* activeViewport;
 Viewport* viewports[4];
 vec3* currentlyHeldVertex = nullptr;
+int currentlyActiveModelIndex = 0;
 
 int main()
 {
@@ -111,16 +112,16 @@ int main()
 		shader.setMat4("projection", projection);
 
 		viewportBottomLeft.show(glm::translate(glm::mat4(),
-			glm::vec3(0, 0, 30)), models);
+			glm::vec3(0, 0, 30)), models, currentlyActiveModelIndex);
 		viewportTopRight.show(glm::rotate(glm::mat4(),
 			glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
-				glm::vec3(30, 0, 0)), models);
+				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex);
 		viewportBottomRight.show(glm::rotate(glm::mat4(),
 			glm::radians(90.0f), glm::vec3(1, 0, 0))*glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0)) * glm::translate(glm::mat4(),
-				glm::vec3(0, 30, 0)), models);
+				glm::vec3(0, 30, 0)), models, currentlyActiveModelIndex);
 		viewportTopLeft.show(glm::rotate(glm::mat4(), (float)glfwGetTime(),
 			glm::vec3(2.2f, 3.4, 0.4f)) * glm::translate(glm::mat4(),
-				glm::vec3(30, 0, 0)), models);
+				glm::vec3(30, 0, 0)), models, currentlyActiveModelIndex);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -191,6 +192,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		{
 			currentInteractionMode = InteractionModes::CREATING_NEW_MODEL;
 			models.push_back(activeModel = new Model);
+			currentlyActiveModelIndex = models.size() - 1;
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		}
 		if (key == GLFW_KEY_C)
@@ -198,10 +200,19 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			currentlyHeldVertex = nullptr;
 			currentInteractionMode = InteractionModes::EDITING_VERTICES;
 		}
-		if (key == GLFW_KEY_DELETE && action == GLFW_PRESS)
+		if (key == GLFW_KEY_DELETE)
 		{
 			activeModel->removeVertex(currentlyHeldVertex, activeModel);
 			activeModel->updateMeshData();
+		}
+		if (key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT)
+		{
+			currentlyActiveModelIndex = (key == GLFW_KEY_LEFT) ? currentlyActiveModelIndex - 1 : currentlyActiveModelIndex + 1;
+			if (currentlyActiveModelIndex > models.size() - 1)
+				currentlyActiveModelIndex = 0;
+			else if (currentlyActiveModelIndex < 0)
+				currentlyActiveModelIndex = models.size() - 1;
+			activeModel = models[currentlyActiveModelIndex];
 		}
 	}
 }

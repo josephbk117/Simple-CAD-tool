@@ -10,7 +10,7 @@ class Viewport
 public:
 	Viewport(vec2 origin, vec2 size, const ShaderProgram& shaderProgram);
 	void setViewMatrix(mat4 viewMatrix);
-	void show(const mat4 &viewMatrix, const std::vector<Model *> &models);
+	void show(const mat4 &viewMatrix, const std::vector<Model *> &models, unsigned int activeModelIndex);
 	void setViewportConvertion(float xOffset, float yOffset);
 	void getConvertedViewportCoord(float &x, float &y);
 	void setBorderColor(float r, float g, float b);
