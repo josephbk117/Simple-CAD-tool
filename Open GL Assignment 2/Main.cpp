@@ -9,7 +9,7 @@
 
 enum InteractionModes
 {
-	ADDING_VERTICES, CREATING_NEW_MODEL, EDITING_VERTICES,
+	ADDING_VERTICES, CREATING_NEW_MODEL, EDITING_VERTICES, MODEL_CYCLE_THROUGH
 };
 
 InteractionModes currentInteractionMode = InteractionModes::ADDING_VERTICES;
@@ -188,7 +188,11 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		if (key == GLFW_KEY_Z)
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		if (key == GLFW_KEY_X)
+		{
 			currentInteractionMode = InteractionModes::CREATING_NEW_MODEL;
+			models.push_back(activeModel = new Model);
+			currentInteractionMode = InteractionModes::ADDING_VERTICES;
+		}
 		if (key == GLFW_KEY_C)
 		{
 			currentlyHeldVertex = nullptr;
