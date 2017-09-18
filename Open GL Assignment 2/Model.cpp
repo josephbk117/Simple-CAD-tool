@@ -15,14 +15,17 @@ void Model::updateMeshData()
 {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * 3 * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * 4 * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	//selection index thing attribute
+	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Model::removeVertex(vec3* vertex, Model* model)
+void Model::removeVertex(vec4* vertex, Model* model)
 {
 	std::cout << "\nVertex count = " << vertexData.size();
 	for (int i = 0; i < vertexData.size(); i++)
@@ -34,10 +37,33 @@ void Model::removeVertex(vec3* vertex, Model* model)
 		}
 	}
 }
-/*
-Can pass argument as NULL , to ignore that axis
-*/
-vec3 * Model::vertexAtViewportCoord(float x, float y, float z)
+void Model::setVerticesAsSelected(int* indices, int length)
+{
+	for (int i = 0; i < vertexData.size(); i++)
+	{
+		for (int j = 0; j < length; j++)
+		{
+			if (i == indices[j])
+			{
+				vertexData[i].w = 1.0f;
+				break;
+			}
+			else
+				vertexData[i].w = 0.0f;
+		}
+	}
+}
+
+int Model::getIndexOfVertex(vec4 *vertex)
+{
+	for (int i = 0; i < vertexData.size(); i++)
+	{
+		if (vertex == &vertexData[i])
+			return i;
+	}
+}
+
+vec4 * Model::vertexAtViewportCoord(float x, float y, float z)
 {
 	for (int i = 0; i < vertexData.size(); i++)
 	{
@@ -83,6 +109,11 @@ void Model::translate(const vec3 &translateVector)
 	transform = glm::translate(transform, translateVector);
 }
 
+mat4 Model::getTransform()
+{
+	return transform;
+}
+
 bool Model::containsVertexData()
 {
 	return (vertexData.size() > 0) ? true : false;
@@ -90,12 +121,12 @@ bool Model::containsVertexData()
 
 void Model::addVertex(const vec3 &vertexPosition)
 {
-	vertexData.push_back(vertexPosition);
+	vertexData.push_back(vec4(vertexPosition, 0.0));
 }
 
 void Model::addVertex(float x, float y, float z)
 {
-	vertexData.push_back(vec3(x, y, z));
+	vertexData.push_back(vec4(x, y, z, 0.0));
 }
 
 void Model::display(bool showVertices)

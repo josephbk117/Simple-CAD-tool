@@ -15,13 +15,16 @@ public:
 	void addVertex(float x, float y, float z);
 	void display(bool showVertices);
 	void updateMeshData();
-	void removeVertex(vec3* vertex, Model* model);
-	vec3* vertexAtViewportCoord(float x, float y, float z);
+	void removeVertex(vec4* vertex, Model* model);
+	void setVerticesAsSelected(int* indices, int length);
+	int getIndexOfVertex(vec4 *vertex);
+	vec4* vertexAtViewportCoord(float x, float y, float z);
 	void translate(const vec3 &translateVector);
+	mat4 getTransform();
 	bool containsVertexData();
 private:
 	unsigned int VBO, VAO;
-	std::vector<vec3> vertexData;
+	std::vector<vec4> vertexData;
 	mat4 transform;
 };
 

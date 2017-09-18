@@ -39,7 +39,7 @@ std::vector<Model *> models;
 Model* activeModel;
 Viewport* activeViewport;
 Viewport* viewports[4];
-std::vector<vec3 *>currentlyHeldVertices;
+std::vector<vec4 *>currentlyHeldVertices;
 int currentlyActiveModelIndex = 0;
 
 int main()
@@ -172,14 +172,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		else if (activeViewport == viewports[2])
 		{
 			if (currentlyHeldVertices.size() == 1)
+			{
 				currentlyHeldVertices[0]->y = y1;
-			currentlyHeldVertices[0]->z = x1;
+				currentlyHeldVertices[0]->z = x1;
+			}
 		}
 		else if (activeViewport == viewports[3])
 		{
 			if (currentlyHeldVertices.size() == 1)
+			{
 				currentlyHeldVertices[0]->x = y1;
-			currentlyHeldVertices[0]->z = x1;
+				currentlyHeldVertices[0]->z = x1;
+			}
 		}
 		activeModel->updateMeshData();
 	}
@@ -212,6 +216,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		}
 		if (key == GLFW_KEY_Q)
 		{
+			activeModel->updateMeshData();
 			showLocalSpace = !showLocalSpace;
 		}
 		if (key == GLFW_KEY_N || key == GLFW_KEY_M)
@@ -252,6 +257,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(NULL, y1, x1));
 				if (activeViewport == viewports[3])
 					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(y1, NULL, x1));
+				for (int i = 0; i < currentlyHeldVertices.size(); i++)
+				{
+					int x[1];
+					x[0] = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
+					activeModel->setVerticesAsSelected(x, 1);
+				}
 			}
 		}
 	}
