@@ -39,35 +39,8 @@ std::vector<Model *> models;
 Model* activeModel;
 Viewport* activeViewport;
 Viewport* viewports[4];
-vec3* currentlyHeldVertex = nullptr;
+std::vector<vec3 *>currentlyHeldVertices;
 int currentlyActiveModelIndex = 0;
-
-
-void drawSphere(float radius, unsigned int rings, unsigned int sectors)
-{
-	const float PI = 22.0f / 7.0f;
-	// x = x0 + r * cos(T) * sin(O)
-	// y = y0 + r * sin(T) * cos(O)
-	// z = z0 + r * cos(O)				0 <= T <= 2PI , 0 <= O <= PI
-	const float tInc = (2 * PI) / (float)rings;
-	const float oInc = PI / (float)sectors;
-	glBegin(GL_POINTS);
-	for (int r = 0; r < rings; r++)
-	{
-		for (int s = 0; s < sectors; s++)
-		{
-			float t = r * tInc;
-			float o = s * oInc;
-
-			float x, y, z;
-			x = radius * cos(t) * sin(o);
-			y = radius * sin(t) * cos(o);
-			z = radius * cos(o);
-			glVertex3f(x, y, z);
-		}
-	}
-	glEnd();
-}
 
 int main()
 {
@@ -185,23 +158,28 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 			viewports[i]->setBorderColor(1, 1, 1);
 	}
 	float x1 = mouseData.x, y1 = mouseData.y;
-	if (currentlyHeldVertex != nullptr && currentInteractionMode == InteractionModes::EDITING_VERTICES)
+	if (currentlyHeldVertices.size() > 0 && currentInteractionMode == InteractionModes::EDITING_VERTICES)
 	{
 		activeViewport->getConvertedViewportCoord(x1, y1);
 		if (activeViewport == viewports[0])
 		{
-			currentlyHeldVertex->x = x1;
-			currentlyHeldVertex->y = y1;
+			if (currentlyHeldVertices.size() == 1)
+			{
+				currentlyHeldVertices[0]->x = x1;
+				currentlyHeldVertices[0]->y = y1;
+			}
 		}
 		else if (activeViewport == viewports[2])
 		{
-			currentlyHeldVertex->y = y1;
-			currentlyHeldVertex->z = x1;
+			if (currentlyHeldVertices.size() == 1)
+				currentlyHeldVertices[0]->y = y1;
+			currentlyHeldVertices[0]->z = x1;
 		}
 		else if (activeViewport == viewports[3])
 		{
-			currentlyHeldVertex->x = y1;
-			currentlyHeldVertex->z = x1;
+			if (currentlyHeldVertices.size() == 1)
+				currentlyHeldVertices[0]->x = y1;
+			currentlyHeldVertices[0]->z = x1;
 		}
 		activeModel->updateMeshData();
 	}
@@ -223,12 +201,13 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		}
 		if (key == GLFW_KEY_C)
 		{
-			currentlyHeldVertex = nullptr;
+			currentlyHeldVertices.clear();
 			currentInteractionMode = InteractionModes::EDITING_VERTICES;
 		}
 		if (key == GLFW_KEY_DELETE)
 		{
-			activeModel->removeVertex(currentlyHeldVertex, activeModel);
+			for (int i = 0; i < currentlyHeldVertices.size(); i++)
+				activeModel->removeVertex(currentlyHeldVertices[i], activeModel);
 			activeModel->updateMeshData();
 		}
 		if (key == GLFW_KEY_Q)
@@ -264,15 +243,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		}
 		else if (currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
-			if (currentlyHeldVertex == nullptr)
+			if (currentlyHeldVertices.size() <= 0)
 			{
 				activeViewport->getConvertedViewportCoord(x1, y1);
 				if (activeViewport == viewports[0])
-					currentlyHeldVertex = activeModel->vertexAtViewportCoord(x1, y1, NULL);
+					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(x1, y1, NULL));
 				if (activeViewport == viewports[2])
-					currentlyHeldVertex = activeModel->vertexAtViewportCoord(NULL, y1, x1);
+					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(NULL, y1, x1));
 				if (activeViewport == viewports[3])
-					currentlyHeldVertex = activeModel->vertexAtViewportCoord(y1, NULL, x1);
+					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(y1, NULL, x1));
 			}
 		}
 	}
