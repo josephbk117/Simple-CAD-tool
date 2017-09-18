@@ -2,6 +2,7 @@
 
 Model::Model()
 {
+	transform = glm::mat4(1);
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 }
@@ -77,12 +78,17 @@ vec3 * Model::vertexAtViewportCoord(float x, float y, float z)
 	return nullptr;
 }
 
+void Model::translate(const vec3 &translateVector)
+{
+	transform = glm::translate(transform, translateVector);
+}
+
 bool Model::containsVertexData()
 {
 	return (vertexData.size() > 0) ? true : false;
 }
 
-void Model::addVertex(vec3 vertexPosition)
+void Model::addVertex(const vec3 &vertexPosition)
 {
 	vertexData.push_back(vertexPosition);
 }
@@ -96,7 +102,7 @@ void Model::display(bool showVertices)
 {
 	glPointSize(5);
 	glBindVertexArray(VAO);
-	if(showVertices)
+	if (showVertices)
 		glDrawArrays(GL_POINTS, 0, vertexData.size());
 	glDrawArrays(GL_LINE_STRIP, 0, vertexData.size());
 	glBindVertexArray(0);

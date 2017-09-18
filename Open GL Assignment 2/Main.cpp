@@ -107,7 +107,7 @@ int main()
 		glm::mat4 model;
 		glm::mat4 view;
 		glm::mat4 projection;
-		projection = glm::orthoLH(-125.0f, 125.0f, -125.0f, 125.0f, -150.0f, 150.0f);
+		projection = glm::orthoLH(-125.0f, 125.0f, -125.0f, 125.0f, -180.0f, 180.0f);
 
 		shader.use();
 		shader.setMat4("model", model);
