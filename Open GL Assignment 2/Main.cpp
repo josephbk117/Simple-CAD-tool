@@ -251,12 +251,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			if (currentlyHeldVertices.size() <= 0)
 			{
 				activeViewport->getConvertedViewportCoord(x1, y1);
+				vec4* vertex;
 				if (activeViewport == viewports[0])
-					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(x1, y1, NULL));
+					vertex = activeModel->vertexAtViewportCoord(x1, y1, NULL);
 				if (activeViewport == viewports[2])
-					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(NULL, y1, x1));
+					vertex = activeModel->vertexAtViewportCoord(NULL, y1, x1);
 				if (activeViewport == viewports[3])
-					currentlyHeldVertices.push_back(activeModel->vertexAtViewportCoord(y1, NULL, x1));
+					vertex = activeModel->vertexAtViewportCoord(y1, NULL, x1);
+				if (vertex != nullptr)
+					currentlyHeldVertices.push_back(vertex);
 				for (int i = 0; i < currentlyHeldVertices.size(); i++)
 				{
 					int x[1];
