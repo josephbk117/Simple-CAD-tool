@@ -37,11 +37,28 @@ void Model::removeVertex(vec4* vertex, Model* model)
 		}
 	}
 }
-void Model::setVerticesAsSelected(int* indices, int length)
+void Model::setVerticesAsSelected(int* indices, unsigned int length)
 {
 	for (int i = 0; i < vertexData.size(); i++)
 	{
 		for (int j = 0; j < length; j++)
+		{
+			if (i == indices[j])
+			{
+				vertexData[i].w = 1.0f;
+				break;
+			}
+			else
+				vertexData[i].w = 0.0f;
+		}
+	}
+}
+
+void Model::setVerticesAsSelected(const std::vector<unsigned int> indices)
+{
+	for (int i = 0; i < vertexData.size(); i++)
+	{
+		for (int j = 0; j < indices.size(); j++)
 		{
 			if (i == indices[j])
 			{

@@ -251,7 +251,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			if (currentlyHeldVertices.size() <= 0)
 			{
 				activeViewport->getConvertedViewportCoord(x1, y1);
-				vec4* vertex;
+				vec4* vertex = nullptr;
 				if (activeViewport == viewports[0])
 					vertex = activeModel->vertexAtViewportCoord(x1, y1, NULL);
 				if (activeViewport == viewports[2])
@@ -260,13 +260,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					vertex = activeModel->vertexAtViewportCoord(y1, NULL, x1);
 				if (vertex != nullptr)
 					currentlyHeldVertices.push_back(vertex);
-				for (int i = 0; i < currentlyHeldVertices.size(); i++)
-				{
-					int x[1];
-					x[0] = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
-					activeModel->setVerticesAsSelected(x, 1);
-				}
 			}
+			std::vector<unsigned int> indices;
+			for (int i = 0; i < currentlyHeldVertices.size(); i++)
+			{
+				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));				
+			}
+			activeModel->setVerticesAsSelected(indices);
 		}
 	}
 }

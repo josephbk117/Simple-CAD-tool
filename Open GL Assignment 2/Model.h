@@ -4,6 +4,7 @@
 #include <GL\glew.h>
 #include <GLM\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 using namespace glm;
 
 class Model
@@ -16,7 +17,8 @@ public:
 	void display(bool showVertices);
 	void updateMeshData();
 	void removeVertex(vec4* vertex, Model* model);
-	void setVerticesAsSelected(int* indices, int length);
+	void setVerticesAsSelected(int* indices, unsigned int length);
+	void setVerticesAsSelected(const std::vector<unsigned int> indices);
 	int getIndexOfVertex(vec4 *vertex);
 	vec4* vertexAtViewportCoord(float x, float y, float z);
 	void translate(const vec3 &translateVector);
