@@ -108,6 +108,11 @@ vec4 * Model::vertexAtViewportCoord(float x, float y, float z)
 		}
 		else if (z == NULL)
 		{
+			/*std::cout << "\nMouse Data : " << x << " ," << y;
+			vec4 transformedVertex = glm::inverse(transform) * vec4(x, y, 0, 1);
+			std::cout << "\nTransformed mouse Data : " << transformedVertex.x << " ," << transformedVertex.y;*/
+			//x = transformedVertex.x;
+			//y = transformedVertex.y;
 			if (vertexData[i].x > x - 10 && vertexData[i].x < x + 10)
 			{
 				if (vertexData[i].y > y - 10 && vertexData[i].y < y + 10)
@@ -162,7 +167,7 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 		glDrawArrays(GL_POINTS, 0, vertexData.size());
 	glDrawArrays(GL_LINE_STRIP, 0, vertexData.size());
 	glBindVertexArray(0);
-	glDisable(GL_PRIMITIVE_RESTART);	
+	glDisable(GL_PRIMITIVE_RESTART);
 }
 
 void Model::addVertexFlowSplitIndex(unsigned int index)

@@ -235,7 +235,6 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		}
 		if (key == GLFW_KEY_Q)
 		{
-			activeModel->updateMeshData();
 			showLocalSpace = !showLocalSpace;
 		}
 		if (key == GLFW_KEY_N || key == GLFW_KEY_M)
