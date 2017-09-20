@@ -47,7 +47,7 @@ int main()
 {
 	mouseData.isLeftButtonPressed = false;
 	glfwInit();
-	window = glfwCreateWindow(500, 500, "LOLZ", NULL, NULL);
+	window = glfwCreateWindow(500, 500, "Open Gl - Simple CAD Tool", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -234,15 +234,20 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			activeModel->updateMeshData();
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		}
-		if (key == GLFW_KEY_E)
+		if (key == GLFW_KEY_E && currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
-			for (int i = 0; i < currentlyHeldVertices.size(); i++)
+			if (currentlyHeldVertices.size() > 0)
 			{
-				activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z));
-				activeModel->addVertexFlowSplitIndex(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
-				activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z));
+				for (int i = 0; i < currentlyHeldVertices.size(); i++)
+				{
+					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
+					activeModel->addVertexFlowSplitIndex(indexOfVertex);
+					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z),indexOfVertex);
+					//activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z));
+				}
+				activeModel->updateMeshData();
+				currentInteractionMode = InteractionModes::ADDING_VERTICES;
 			}
-			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		}
 		if (key == GLFW_KEY_Q)
 		{

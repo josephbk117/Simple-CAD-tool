@@ -159,7 +159,12 @@ bool Model::containsVertexData()
 
 void Model::addVertex(const vec3 &vertexPosition)
 {
-	vertexData.push_back(vec4(vertexPosition, 0.0));
+	addVertex(vertexPosition.x, vertexPosition.y, vertexPosition.z);
+}
+
+void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
+{
+	vertexData.insert(vertexData.begin() + indexToPlaceVertex, vec4(vertexPosition, 0.0));
 }
 
 void Model::addVertex(float x, float y, float z)
