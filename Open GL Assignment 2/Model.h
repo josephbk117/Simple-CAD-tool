@@ -15,6 +15,7 @@ public:
 	void addVertex(const vec3 &vertexPosition);
 	void addVertex(float x, float y, float z);
 	void display(bool showVertices);
+	void addVertexFlowSplit(unsigned int index);
 	void updateMeshData();
 	void removeVertex(vec4* vertex, Model* model);
 	void setVerticesAsSelected(int* indices, unsigned int length);
@@ -27,6 +28,7 @@ public:
 private:
 	unsigned int VBO, VAO;
 	std::vector<vec4> vertexData;
+	std::vector<unsigned int> seperationIndices;
 	mat4 transform;
 };
 

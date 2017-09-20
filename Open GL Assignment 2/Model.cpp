@@ -149,9 +149,22 @@ void Model::addVertex(float x, float y, float z)
 void Model::display(bool showVertices)
 {
 	glPointSize(5);
+	if (seperationIndices.size() > 0)
+	{
+		glEnable(GL_PRIMITIVE_RESTART);
+		for (int i = 0; i < seperationIndices.size(); i++)
+			glPrimitiveRestartIndex(seperationIndices[i]);
+	}
+
 	glBindVertexArray(VAO);
 	if (showVertices)
 		glDrawArrays(GL_POINTS, 0, vertexData.size());
 	glDrawArrays(GL_LINE_STRIP, 0, vertexData.size());
 	glBindVertexArray(0);
+	glDisable(GL_PRIMITIVE_RESTART);
+}
+
+void Model::addVertexFlowSplit(unsigned int index)
+{
+	seperationIndices.push_back(index);
 }
