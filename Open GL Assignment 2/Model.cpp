@@ -126,9 +126,9 @@ void Model::translate(const vec3 &translateVector)
 	transform = glm::translate(transform, translateVector);
 }
 
-mat4 Model::getTransform()
+void Model::setTransform(const mat4 &transformMaipulation)
 {
-	return transform;
+	transform = transformMaipulation;
 }
 
 bool Model::containsVertexData()
@@ -146,25 +146,26 @@ void Model::addVertex(float x, float y, float z)
 	vertexData.push_back(vec4(x, y, z, 0.0));
 }
 
-void Model::display(bool showVertices)
+void Model::display(bool showVertices, ShaderProgram *shader)
 {
 	glPointSize(5);
+	shader->use();
+	shader->setMat4("model", transform);
 	if (seperationIndices.size() > 0)
 	{
 		glEnable(GL_PRIMITIVE_RESTART);
 		for (int i = 0; i < seperationIndices.size(); i++)
 			glPrimitiveRestartIndex(seperationIndices[i]);
 	}
-
 	glBindVertexArray(VAO);
 	if (showVertices)
 		glDrawArrays(GL_POINTS, 0, vertexData.size());
 	glDrawArrays(GL_LINE_STRIP, 0, vertexData.size());
 	glBindVertexArray(0);
-	glDisable(GL_PRIMITIVE_RESTART);
+	glDisable(GL_PRIMITIVE_RESTART);	
 }
 
-void Model::addVertexFlowSplit(unsigned int index)
+void Model::addVertexFlowSplitIndex(unsigned int index)
 {
 	seperationIndices.push_back(index);
 }

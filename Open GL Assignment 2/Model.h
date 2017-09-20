@@ -5,6 +5,7 @@
 #include <GLM\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include "ShaderProgram.h"
 using namespace glm;
 
 class Model
@@ -14,8 +15,8 @@ public:
 	~Model();
 	void addVertex(const vec3 &vertexPosition);
 	void addVertex(float x, float y, float z);
-	void display(bool showVertices);
-	void addVertexFlowSplit(unsigned int index);
+	void display(bool showVertices, ShaderProgram *shader);
+	void addVertexFlowSplitIndex(unsigned int index);
 	void updateMeshData();
 	void removeVertex(vec4* vertex, Model* model);
 	void setVerticesAsSelected(int* indices, unsigned int length);
@@ -23,7 +24,7 @@ public:
 	int getIndexOfVertex(vec4 *vertex);
 	vec4* vertexAtViewportCoord(float x, float y, float z);
 	void translate(const vec3 &translateVector);
-	mat4 getTransform();
+	void setTransform(const mat4 &transformMaipulation);
 	bool containsVertexData();
 private:
 	unsigned int VBO, VAO;

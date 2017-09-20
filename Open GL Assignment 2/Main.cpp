@@ -97,21 +97,21 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	float timeValue = 0;
+
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 projection;
+	projection = glm::orthoLH(-125.0f, 125.0f, -125.0f, 125.0f, -200.0f, 200.0f);
+
+	shader.use();
+	shader.setMat4("model", model);
+	shader.setMat4("projection", projection);
 	while (!glfwWindowShouldClose(window))
 	{
 		timeValue += 0.001f;
 		processInput(window);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glm::mat4 model;
-		glm::mat4 view;
-		glm::mat4 projection;
-		projection = glm::orthoLH(-125.0f, 125.0f, -125.0f, 125.0f, -180.0f, 180.0f);
-
-		shader.use();
-		shader.setMat4("model", model);
-		shader.setMat4("projection", projection);
 
 		viewportBottomLeft.show(glm::translate(glm::mat4(),
 			glm::vec3(0, 0, 30)), models, currentlyActiveModelIndex, showLocalSpace);
@@ -144,6 +144,18 @@ void processInput(GLFWwindow * window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);*/
 
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		activeModel->translate(vec3(0, 1, 0));
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		activeModel->translate(vec3(0, -1, 0));
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		activeModel->translate(vec3(1, 0, 0));
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		activeModel->translate(vec3(-1, 0, 0));
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+		activeModel->translate(vec3(0, 0, -1));
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+		activeModel->translate(vec3(0, 0, 1));
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -213,6 +225,13 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			for (int i = 0; i < currentlyHeldVertices.size(); i++)
 				activeModel->removeVertex(currentlyHeldVertices[i], activeModel);
 			activeModel->updateMeshData();
+			currentInteractionMode = InteractionModes::ADDING_VERTICES;
+		}
+		if (key == GLFW_KEY_E)
+		{
+			for (int i = 0; i < currentlyHeldVertices.size(); i++)
+				activeModel->addVertexFlowSplitIndex(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
+			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		}
 		if (key == GLFW_KEY_Q)
 		{
@@ -264,7 +283,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			std::vector<unsigned int> indices;
 			for (int i = 0; i < currentlyHeldVertices.size(); i++)
 			{
-				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));				
+				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
 			}
 			activeModel->setVerticesAsSelected(indices);
 		}

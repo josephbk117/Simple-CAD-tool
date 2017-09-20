@@ -24,4 +24,3 @@ private:
 	float xOffset, yOffset;
 	void drawBorder();
 };
-
