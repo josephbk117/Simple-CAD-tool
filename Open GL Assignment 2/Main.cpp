@@ -32,6 +32,7 @@ bool firstMouse = true;
 struct MouseData
 {
 	int x, y;
+	bool isLeftButtonPressed;
 }mouseData;
 
 GLFWwindow *window;
@@ -44,6 +45,7 @@ int currentlyActiveModelIndex = 0;
 
 int main()
 {
+	mouseData.isLeftButtonPressed = false;
 	glfwInit();
 	window = glfwCreateWindow(500, 500, "LOLZ", NULL, NULL);
 	if (window == NULL)
@@ -170,34 +172,37 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 			viewports[i]->setBorderColor(1, 1, 1);
 	}
 	float x1 = mouseData.x, y1 = mouseData.y;
-	if (currentlyHeldVertices.size() > 0 && currentInteractionMode == InteractionModes::EDITING_VERTICES)
+	if (mouseData.isLeftButtonPressed)
 	{
-		activeViewport->getConvertedViewportCoord(x1, y1);
-		if (activeViewport == viewports[0])
+		if (currentlyHeldVertices.size() > 0 && currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
-			if (currentlyHeldVertices.size() == 1)
+			activeViewport->getConvertedViewportCoord(x1, y1);
+			if (activeViewport == viewports[0])
 			{
-				currentlyHeldVertices[0]->x = x1;
-				currentlyHeldVertices[0]->y = y1;
+				if (currentlyHeldVertices.size() == 1)
+				{
+					currentlyHeldVertices[0]->x = x1;
+					currentlyHeldVertices[0]->y = y1;
+				}
 			}
-		}
-		else if (activeViewport == viewports[2])
-		{
-			if (currentlyHeldVertices.size() == 1)
+			else if (activeViewport == viewports[2])
 			{
-				currentlyHeldVertices[0]->y = y1;
-				currentlyHeldVertices[0]->z = x1;
+				if (currentlyHeldVertices.size() == 1)
+				{
+					currentlyHeldVertices[0]->y = y1;
+					currentlyHeldVertices[0]->z = x1;
+				}
 			}
-		}
-		else if (activeViewport == viewports[3])
-		{
-			if (currentlyHeldVertices.size() == 1)
+			else if (activeViewport == viewports[3])
 			{
-				currentlyHeldVertices[0]->x = y1;
-				currentlyHeldVertices[0]->z = x1;
+				if (currentlyHeldVertices.size() == 1)
+				{
+					currentlyHeldVertices[0]->x = y1;
+					currentlyHeldVertices[0]->z = x1;
+				}
 			}
+			activeModel->updateMeshData();
 		}
-		activeModel->updateMeshData();
 	}
 }
 void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -218,6 +223,8 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		if (key == GLFW_KEY_C)
 		{
 			currentlyHeldVertices.clear();
+			activeModel->clearSelectedVertcies();
+			activeModel->updateMeshData();
 			currentInteractionMode = InteractionModes::EDITING_VERTICES;
 		}
 		if (key == GLFW_KEY_DELETE)
@@ -230,7 +237,11 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		if (key == GLFW_KEY_E)
 		{
 			for (int i = 0; i < currentlyHeldVertices.size(); i++)
+			{
+				activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z));
 				activeModel->addVertexFlowSplitIndex(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
+				activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z));
+			}
 			currentInteractionMode = InteractionModes::ADDING_VERTICES;
 		}
 		if (key == GLFW_KEY_Q)
@@ -252,6 +263,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
+		mouseData.isLeftButtonPressed = true;
 		float x1 = mouseData.x, y1 = mouseData.y;
 		if (currentInteractionMode == InteractionModes::ADDING_VERTICES)
 		{
@@ -286,6 +298,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			}
 			activeModel->setVerticesAsSelected(indices);
 		}
+	}
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
+	{
+		mouseData.isLeftButtonPressed = false;
 	}
 }
 
