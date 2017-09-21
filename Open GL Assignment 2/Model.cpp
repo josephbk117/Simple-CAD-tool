@@ -3,6 +3,7 @@
 Model::Model()
 {
 	transform = glm::mat4(1);
+	addVertexFlowSplitIndex(0);
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 }
@@ -177,21 +178,24 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 	glPointSize(5);
 	shader->use();
 	shader->setMat4("model", transform);
-	if (seperationIndices.size() > 0)
+	std::vector<GLint> first(vertexSections.size());
+	std::vector<GLsizei> count(vertexSections.size());
+	vertexSections[vertexSections.size() - 1].count = 
+		vertexData.size() - vertexSections[vertexSections.size() - 1].first;
+	for (int i = 0; i < vertexSections.size(); i++)
 	{
-		glEnable(GL_PRIMITIVE_RESTART);
-		for (int i = 0; i < seperationIndices.size(); i++)
-			glPrimitiveRestartIndex(seperationIndices[i]);
+		first[i] = vertexSections[i].first;
+		count[i] = vertexSections[i].count;
 	}
 	glBindVertexArray(VAO);
 	if (showVertices)
-		glDrawArrays(GL_POINTS, 0, vertexData.size());
-	glDrawArrays(GL_LINE_STRIP, 0, vertexData.size());
+		glMultiDrawArrays(GL_POINTS, first.data(), count.data(), vertexSections.size());
+	glMultiDrawArrays(GL_LINE_STRIP, first.data(), count.data(), vertexSections.size());
 	glBindVertexArray(0);
 	glDisable(GL_PRIMITIVE_RESTART);
 }
 
 void Model::addVertexFlowSplitIndex(unsigned int index)
 {
-	seperationIndices.push_back(index);
+	vertexSections.push_back(VertexSection(index, vertexData.size() - index));
 }

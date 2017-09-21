@@ -10,6 +10,16 @@ using namespace glm;
 
 class Model
 {
+	struct VertexSection
+	{
+		int first;
+		int count;
+		VertexSection(int _first, int _count)
+		{
+			first = _first;
+			count = _count;
+		}
+	};
 public:
 	Model();
 	~Model();
@@ -31,7 +41,7 @@ public:
 private:
 	unsigned int VBO, VAO;
 	std::vector<vec4> vertexData;
-	std::vector<unsigned int> seperationIndices;
+	std::vector<VertexSection> vertexSections;
 	mat4 transform;
 };
 

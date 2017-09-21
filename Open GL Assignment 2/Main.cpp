@@ -76,6 +76,7 @@ int main()
 	shader.compileShaders("F:\\Visual Studio 2017\\Projects\\Open GL Assignment 2\\Debug\\basic.vs",
 		"F:\\Visual Studio 2017\\Projects\\Open GL Assignment 2\\Debug\\basic.fs");
 	shader.addAttribute("aPos");
+	shader.addAttribute("aVert");
 	shader.linkShaders();
 
 	Viewport viewportBottomLeft(vec2(0, 0), vec2(250, 250), shader);
