@@ -241,9 +241,8 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 				for (int i = 0; i < currentlyHeldVertices.size(); i++)
 				{
 					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
-					activeModel->addVertexFlowSplitIndex(indexOfVertex);
-					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z),indexOfVertex);
-					//activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z));
+					activeModel->addVertexFlowSplitIndex(indexOfVertex + 1);
+					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
 				}
 				activeModel->updateMeshData();
 				currentInteractionMode = InteractionModes::ADDING_VERTICES;
@@ -298,16 +297,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			}
 			std::vector<unsigned int> indices;
 			for (int i = 0; i < currentlyHeldVertices.size(); i++)
-			{
 				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
-			}
 			activeModel->setVerticesAsSelected(indices);
 		}
 	}
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
-	{
 		mouseData.isLeftButtonPressed = false;
-	}
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
