@@ -192,7 +192,6 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 		glMultiDrawArrays(GL_POINTS, first.data(), count.data(), vertexSections.size());
 	glMultiDrawArrays(GL_LINE_STRIP, first.data(), count.data(), vertexSections.size());
 	glBindVertexArray(0);
-	glDisable(GL_PRIMITIVE_RESTART);
 }
 
 void Model::addVertexFlowSplitIndex(unsigned int index)

@@ -243,7 +243,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 				{
 					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
 					activeModel->addVertexFlowSplitIndex(indexOfVertex + 1);
-					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
+					//activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
 				}
 				activeModel->updateMeshData();
 				currentInteractionMode = InteractionModes::ADDING_VERTICES;
