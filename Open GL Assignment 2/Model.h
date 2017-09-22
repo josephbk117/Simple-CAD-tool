@@ -35,6 +35,7 @@ public:
 	void clearSelectedVertcies();
 	int getIndexOfVertex(vec4 *vertex);
 	vec4* vertexAtViewportCoord(float x, float y, float z);
+	vec4* vertexAtIndex(unsigned int index);
 	void translate(const vec3 &translateVector);
 	void setTransform(const mat4 &transformMaipulation);
 	mat4 getTransform();

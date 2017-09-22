@@ -143,6 +143,11 @@ vec4 * Model::vertexAtViewportCoord(float x, float y, float z)
 	return nullptr;
 }
 
+vec4* Model::vertexAtIndex(unsigned int index)
+{
+	return &vertexData[index];
+}
+
 void Model::translate(const vec3 &translateVector)
 {
 	transform = glm::translate(transform, translateVector);
@@ -185,7 +190,7 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 	shader->setMat4("model", transform);
 	std::vector<GLint> first(vertexSections.size());
 	std::vector<GLsizei> count(vertexSections.size());
-	vertexSections[vertexSections.size() - 1].count = 
+	vertexSections[vertexSections.size() - 1].count =
 		vertexData.size() - vertexSections[vertexSections.size() - 1].first;
 	for (int i = 0; i < vertexSections.size(); i++)
 	{

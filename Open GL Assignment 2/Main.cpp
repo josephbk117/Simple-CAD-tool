@@ -178,7 +178,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		if (currentlyHeldVertices.size() > 0 && currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
 			activeViewport->getConvertedViewportCoord(x1, y1);
-			
+
 			if (activeViewport == viewports[0])
 			{
 				if (currentlyHeldVertices.size() == 1)
@@ -265,6 +265,25 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			if (currentlyActiveModelIndex < 0)
 				currentlyActiveModelIndex = models.size() - 1;
 			activeModel = models[currentlyActiveModelIndex];
+		}
+		if (key == GLFW_KEY_P && currentlyHeldVertices.size() > 0)
+		{
+			unsigned int currentSelectedIndex = activeModel->getIndexOfVertex(currentlyHeldVertices[0]);
+			vec4* selectedVertex = activeModel->vertexAtIndex(currentSelectedIndex);
+			vec4* lessIndex = activeModel->vertexAtIndex(currentSelectedIndex - 1);
+			vec4* moreIndex = activeModel->vertexAtIndex(currentSelectedIndex + 1);
+			std::cout << "\n selected vertex : " << selectedVertex->x << " ," << selectedVertex->y << " ," << selectedVertex->z;
+			std::cout << "\n less index : " << lessIndex->x << " ," << lessIndex->y << " ," << lessIndex->z;
+			std::cout << "\n more index : " << moreIndex->x << " ," << moreIndex->y << " ," << moreIndex->z;
+			vec3 lineVector = vec3(moreIndex->x, moreIndex->y, moreIndex->z) - vec3(lessIndex->x, lessIndex->y, lessIndex->z);
+			float distance = glm::distance(vec3(lessIndex->x, lessIndex->y, lessIndex->z), vec3(moreIndex->x, moreIndex->y, moreIndex->z));
+			std::cout << "\n Distance = " << distance;
+			lineVector = normalize(lineVector);
+			vec3 transformedPoint = vec3(lessIndex->x, lessIndex->y, lessIndex->z) + (lineVector * (distance / 2));
+			selectedVertex->x = transformedPoint.x;
+			selectedVertex->y = transformedPoint.y;
+			selectedVertex->z = transformedPoint.z;
+			activeModel->updateMeshData();
 		}
 	}
 }
