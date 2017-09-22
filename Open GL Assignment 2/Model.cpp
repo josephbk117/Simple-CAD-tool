@@ -153,6 +153,11 @@ void Model::setTransform(const mat4 &transformMaipulation)
 	transform = transformMaipulation;
 }
 
+mat4 Model::getTransform()
+{
+	return transform;
+}
+
 bool Model::containsVertexData()
 {
 	return (vertexData.size() > 0) ? true : false;

@@ -7,7 +7,7 @@
 #include "Viewport.h"
 #include <vector>
 
-enum InteractionModes
+enum class InteractionModes
 {
 	ADDING_VERTICES, EDITING_VERTICES, MODEL_CYCLE_THROUGH
 };
@@ -31,7 +31,7 @@ bool firstMouse = true;
 
 struct MouseData
 {
-	int x, y;
+	float x, y;
 	bool isLeftButtonPressed;
 }mouseData;
 
@@ -162,8 +162,8 @@ void processInput(GLFWwindow * window)
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	mouseData.x = (int)xpos;
-	mouseData.y = -(int)ypos;
+	mouseData.x = (float)xpos;
+	mouseData.y = -(float)ypos;
 	for (int i = 0; i < 4; i++)
 	{
 		viewports[i]->setBorderColor(0, 0.5, 1);
@@ -243,7 +243,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 				{
 					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
 					activeModel->addVertexFlowSplitIndex(indexOfVertex + 1);
-					//activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
+					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
 				}
 				activeModel->updateMeshData();
 				currentInteractionMode = InteractionModes::ADDING_VERTICES;

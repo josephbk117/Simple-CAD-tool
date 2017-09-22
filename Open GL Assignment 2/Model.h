@@ -37,6 +37,7 @@ public:
 	vec4* vertexAtViewportCoord(float x, float y, float z);
 	void translate(const vec3 &translateVector);
 	void setTransform(const mat4 &transformMaipulation);
+	mat4 getTransform();
 	bool containsVertexData();
 private:
 	unsigned int VBO, VAO;
