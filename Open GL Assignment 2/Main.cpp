@@ -5,6 +5,7 @@
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "Viewport.h"
+#include "VertexManipulationHelper.h"
 #include <vector>
 
 enum class InteractionModes
@@ -270,20 +271,16 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		{
 			unsigned int currentSelectedIndex = activeModel->getIndexOfVertex(currentlyHeldVertices[0]);
 			vec4* selectedVertex = activeModel->vertexAtIndex(currentSelectedIndex);
-			vec4* lessIndex = activeModel->vertexAtIndex(currentSelectedIndex - 1);
-			vec4* moreIndex = activeModel->vertexAtIndex(currentSelectedIndex + 1);
-			std::cout << "\n selected vertex : " << selectedVertex->x << " ," << selectedVertex->y << " ," << selectedVertex->z;
-			std::cout << "\n less index : " << lessIndex->x << " ," << lessIndex->y << " ," << lessIndex->z;
-			std::cout << "\n more index : " << moreIndex->x << " ," << moreIndex->y << " ," << moreIndex->z;
-			vec3 lineVector = vec3(moreIndex->x, moreIndex->y, moreIndex->z) - vec3(lessIndex->x, lessIndex->y, lessIndex->z);
-			float distance = glm::distance(vec3(lessIndex->x, lessIndex->y, lessIndex->z), vec3(moreIndex->x, moreIndex->y, moreIndex->z));
-			std::cout << "\n Distance = " << distance;
-			lineVector = normalize(lineVector);
-			vec3 transformedPoint = vec3(lessIndex->x, lessIndex->y, lessIndex->z) + (lineVector * (distance / 2));
-			selectedVertex->x = transformedPoint.x;
-			selectedVertex->y = transformedPoint.y;
-			selectedVertex->z = transformedPoint.z;
-			activeModel->updateMeshData();
+			if (currentSelectedIndex >= 1 && currentSelectedIndex + 1 < activeModel->getVertexCount())
+			{
+				vec4* lessIndex = activeModel->vertexAtIndex(currentSelectedIndex - 1);
+				vec4* moreIndex = activeModel->vertexAtIndex(currentSelectedIndex + 1);
+
+				vec3 vertex1 = vec3(lessIndex->x, lessIndex->y, lessIndex->z);
+				vec3 vertex2 = vec3(moreIndex->x, moreIndex->y, moreIndex->z);
+				VertexManipulationHelper::setVertexAlongLine(selectedVertex, vertex1, vertex2, 0.25f, VertexManipulationHelper::ManipulationType::LERP_VALUE);
+				activeModel->updateMeshData();
+			}
 		}
 	}
 }

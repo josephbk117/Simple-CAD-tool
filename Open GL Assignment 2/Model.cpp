@@ -168,6 +168,11 @@ bool Model::containsVertexData()
 	return (vertexData.size() > 0) ? true : false;
 }
 
+unsigned int Model::getVertexCount()
+{
+	return vertexData.size();
+}
+
 void Model::addVertex(const vec3 &vertexPosition)
 {
 	addVertex(vertexPosition.x, vertexPosition.y, vertexPosition.z);

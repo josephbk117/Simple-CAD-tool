@@ -40,6 +40,7 @@ public:
 	void setTransform(const mat4 &transformMaipulation);
 	mat4 getTransform();
 	bool containsVertexData();
+	unsigned int getVertexCount();
 private:
 	unsigned int VBO, VAO;
 	std::vector<vec4> vertexData;
