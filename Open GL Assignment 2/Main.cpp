@@ -178,29 +178,32 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		if (currentlyHeldVertices.size() > 0 && currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
 			activeViewport->getConvertedViewportCoord(x1, y1);
+			
 			if (activeViewport == viewports[0])
 			{
-				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
 				if (currentlyHeldVertices.size() == 1)
 				{
-					currentlyHeldVertices[0]->x =  transformedPoint.x;
-					currentlyHeldVertices[0]->y =  transformedPoint.y;
+					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
+					currentlyHeldVertices[0]->x = transformedPoint.x;
+					currentlyHeldVertices[0]->y = transformedPoint.y;
 				}
 			}
 			else if (activeViewport == viewports[2])
 			{
 				if (currentlyHeldVertices.size() == 1)
 				{
-					currentlyHeldVertices[0]->y = y1;
-					currentlyHeldVertices[0]->z = x1;
+					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
+					currentlyHeldVertices[0]->y = transformedPoint.y;
+					currentlyHeldVertices[0]->z = transformedPoint.z;
 				}
 			}
 			else if (activeViewport == viewports[3])
 			{
 				if (currentlyHeldVertices.size() == 1)
 				{
-					currentlyHeldVertices[0]->x = y1;
-					currentlyHeldVertices[0]->z = x1;
+					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
+					currentlyHeldVertices[0]->x = transformedPoint.y;
+					currentlyHeldVertices[0]->z = transformedPoint.z;
 				}
 			}
 			activeModel->updateMeshData();
@@ -286,17 +289,23 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		{
 			if (currentlyHeldVertices.size() <= 0)
 			{
-				//____TRANSFORM IT THEN USE IT____//
-
 				activeViewport->getConvertedViewportCoord(x1, y1);
-				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
 				vec4* vertex = nullptr;
 				if (activeViewport == viewports[0])
+				{
+					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
 					vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, transformedPoint.y, NULL);
+				}
 				if (activeViewport == viewports[2])
-					vertex = activeModel->vertexAtViewportCoord(NULL, y1, x1);
+				{
+					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
+					vertex = activeModel->vertexAtViewportCoord(NULL, transformedPoint.y, transformedPoint.z);
+				}
 				if (activeViewport == viewports[3])
-					vertex = activeModel->vertexAtViewportCoord(y1, NULL, x1);
+				{
+					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(y1, 0, x1, 1);
+					vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, NULL, transformedPoint.z);
+				}
 				if (vertex != nullptr)
 					currentlyHeldVertices.push_back(vertex);
 			}
