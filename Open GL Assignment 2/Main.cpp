@@ -180,10 +180,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 			activeViewport->getConvertedViewportCoord(x1, y1);
 			if (activeViewport == viewports[0])
 			{
+				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
 				if (currentlyHeldVertices.size() == 1)
 				{
-					currentlyHeldVertices[0]->x = x1;
-					currentlyHeldVertices[0]->y = y1;
+					currentlyHeldVertices[0]->x =  transformedPoint.x;
+					currentlyHeldVertices[0]->y =  transformedPoint.y;
 				}
 			}
 			else if (activeViewport == viewports[2])
@@ -285,10 +286,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		{
 			if (currentlyHeldVertices.size() <= 0)
 			{
+				//____TRANSFORM IT THEN USE IT____//
+
 				activeViewport->getConvertedViewportCoord(x1, y1);
+				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
 				vec4* vertex = nullptr;
 				if (activeViewport == viewports[0])
-					vertex = activeModel->vertexAtViewportCoord(x1, y1, NULL);
+					vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, transformedPoint.y, NULL);
 				if (activeViewport == viewports[2])
 					vertex = activeModel->vertexAtViewportCoord(NULL, y1, x1);
 				if (activeViewport == viewports[3])
