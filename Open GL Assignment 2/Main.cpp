@@ -27,11 +27,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+GLFWwindow *window;
+std::vector<Model *> models;
+Model* activeModel;
+Viewport* activeViewport;
+Viewport* viewports[4];
+std::vector<vec4 *>currentlyHeldVertices;
 Camera camera(glm::vec3(0.0f, 0.0f, -20.0f));
-float lastX = 500 / 2.0f;
-float lastY = 500 / 2.0f;
-bool firstMouse = true;
-bool showLocalSpace = false;
 
 struct MouseData
 {
@@ -39,20 +41,15 @@ struct MouseData
 	bool isLeftButtonPressed;
 }mouseData, mouseDataAtVertexSlideStart;
 
-
-GLFWwindow *window;
-std::vector<Model *> models;
-Model* activeModel;
-Viewport* activeViewport;
-Viewport* viewports[4];
-std::vector<vec4 *>currentlyHeldVertices;
+bool firstMouse = true;
+bool showLocalSpace = false;
 int currentlyActiveModelIndex = 0;
 
 int main()
 {
 	mouseData.isLeftButtonPressed = false;
 	glfwInit();
-	window = glfwCreateWindow(500, 500, "Open Gl - Simple CAD Tool", NULL, NULL);
+	window = glfwCreateWindow(500, 500, "Open GL - Simple CAD Tool", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -118,7 +115,6 @@ int main()
 	{
 		timeValue += 0.001f;
 		processInput(window);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		viewportBottomLeft.show(glm::translate(glm::mat4(),
@@ -207,8 +203,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 				{
 					if (currentlyHeldVertices.size() == 1)
 					{
-						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
-						currentlyHeldVertices[0]->x = transformedPoint.y;
+						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(y1, 0, x1, 1);
+						currentlyHeldVertices[0]->x = transformedPoint.x;
 						currentlyHeldVertices[0]->z = transformedPoint.z;
 					}
 				}
