@@ -1,6 +1,5 @@
 #include "VertexManipulationHelper.h"
 
-
 void VertexManipulationHelper::setVertexAlongLine(vec4 * vertexToMove, vec3 vertex1, vec3 vertex2, float manipulationValue, ManipulationType manipulationType, bool restrictWithinEdge)
 {
 	vec3 lineVector = vec3(vertex2.x, vertex2.y, vertex2.z) - vec3(vertex1.x, vertex1.y, vertex1.z);

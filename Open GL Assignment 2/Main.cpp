@@ -12,10 +12,12 @@ enum class InteractionModes
 {
 	ADDING_VERTICES, EDITING_VERTICES, MODEL_CYCLE_THROUGH
 };
-
-bool showLocalSpace = false;
-
+enum class VertexManipulationMode
+{
+	VERTEX_POSITIONING, VERTEX_SLIDING
+};
 InteractionModes currentInteractionMode = InteractionModes::ADDING_VERTICES;
+VertexManipulationMode vertexManipMode = VertexManipulationMode::VERTEX_POSITIONING;
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -29,12 +31,14 @@ Camera camera(glm::vec3(0.0f, 0.0f, -20.0f));
 float lastX = 500 / 2.0f;
 float lastY = 500 / 2.0f;
 bool firstMouse = true;
+bool showLocalSpace = false;
 
 struct MouseData
 {
 	float x, y;
 	bool isLeftButtonPressed;
-}mouseData;
+}mouseData, mouseDataAtVertexSlideStart;
+
 
 GLFWwindow *window;
 std::vector<Model *> models;
@@ -179,32 +183,49 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		if (currentlyHeldVertices.size() > 0 && currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
 			activeViewport->getConvertedViewportCoord(x1, y1);
+			if (vertexManipMode == VertexManipulationMode::VERTEX_POSITIONING)
+			{
+				if (activeViewport == viewports[0])
+				{
+					if (currentlyHeldVertices.size() == 1)
+					{
+						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
+						currentlyHeldVertices[0]->x = transformedPoint.x;
+						currentlyHeldVertices[0]->y = transformedPoint.y;
+					}
+				}
+				else if (activeViewport == viewports[2])
+				{
+					if (currentlyHeldVertices.size() == 1)
+					{
+						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
+						currentlyHeldVertices[0]->y = transformedPoint.y;
+						currentlyHeldVertices[0]->z = transformedPoint.z;
+					}
+				}
+				else if (activeViewport == viewports[3])
+				{
+					if (currentlyHeldVertices.size() == 1)
+					{
+						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
+						currentlyHeldVertices[0]->x = transformedPoint.y;
+						currentlyHeldVertices[0]->z = transformedPoint.z;
+					}
+				}
+			}
+			if (vertexManipMode == VertexManipulationMode::VERTEX_SLIDING)
+			{
+				float deltaX = abs(mouseData.x - mouseDataAtVertexSlideStart.x);
+				unsigned int currentSelectedIndex = activeModel->getIndexOfVertex(currentlyHeldVertices[0]);
+				vec4* selectedVertex = activeModel->vertexAtIndex(currentSelectedIndex);
+				if (currentSelectedIndex >= 1 && currentSelectedIndex + 1 < activeModel->getVertexCount())
+				{
+					vec4* lessIndex = activeModel->vertexAtIndex(currentSelectedIndex - 1);
+					vec4* moreIndex = activeModel->vertexAtIndex(currentSelectedIndex + 1);
 
-			if (activeViewport == viewports[0])
-			{
-				if (currentlyHeldVertices.size() == 1)
-				{
-					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
-					currentlyHeldVertices[0]->x = transformedPoint.x;
-					currentlyHeldVertices[0]->y = transformedPoint.y;
-				}
-			}
-			else if (activeViewport == viewports[2])
-			{
-				if (currentlyHeldVertices.size() == 1)
-				{
-					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
-					currentlyHeldVertices[0]->y = transformedPoint.y;
-					currentlyHeldVertices[0]->z = transformedPoint.z;
-				}
-			}
-			else if (activeViewport == viewports[3])
-			{
-				if (currentlyHeldVertices.size() == 1)
-				{
-					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
-					currentlyHeldVertices[0]->x = transformedPoint.y;
-					currentlyHeldVertices[0]->z = transformedPoint.z;
+					vec3 vertex1 = vec3(lessIndex->x, lessIndex->y, lessIndex->z);
+					vec3 vertex2 = vec3(moreIndex->x, moreIndex->y, moreIndex->z);
+					VertexManipulationHelper::setVertexAlongLine(selectedVertex, vertex1, vertex2, deltaX, VertexManipulationHelper::ManipulationType::DISTANCE, true);
 				}
 			}
 			activeModel->updateMeshData();
@@ -232,6 +253,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 			activeModel->clearSelectedVertcies();
 			activeModel->updateMeshData();
 			currentInteractionMode = InteractionModes::EDITING_VERTICES;
+			vertexManipMode = VertexManipulationMode::VERTEX_POSITIONING;
 		}
 		if (key == GLFW_KEY_DELETE)
 		{
@@ -269,8 +291,11 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		}
 		if (key == GLFW_KEY_P && currentlyHeldVertices.size() > 0)
 		{
+			vertexManipMode = VertexManipulationMode::VERTEX_SLIDING;
 			unsigned int currentSelectedIndex = activeModel->getIndexOfVertex(currentlyHeldVertices[0]);
 			vec4* selectedVertex = activeModel->vertexAtIndex(currentSelectedIndex);
+			mouseDataAtVertexSlideStart.x = mouseData.x;
+			mouseDataAtVertexSlideStart.y = mouseData.y;
 			if (currentSelectedIndex >= 1 && currentSelectedIndex + 1 < activeModel->getVertexCount())
 			{
 				vec4* lessIndex = activeModel->vertexAtIndex(currentSelectedIndex - 1);
@@ -278,7 +303,7 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 
 				vec3 vertex1 = vec3(lessIndex->x, lessIndex->y, lessIndex->z);
 				vec3 vertex2 = vec3(moreIndex->x, moreIndex->y, moreIndex->z);
-				VertexManipulationHelper::setVertexAlongLine(selectedVertex, vertex1, vertex2, 0.25f, VertexManipulationHelper::ManipulationType::LERP_VALUE);
+				VertexManipulationHelper::setVertexAlongLine(selectedVertex, vertex1, vertex2, 0.5f, VertexManipulationHelper::ManipulationType::LERP_VALUE, true);
 				activeModel->updateMeshData();
 			}
 		}
