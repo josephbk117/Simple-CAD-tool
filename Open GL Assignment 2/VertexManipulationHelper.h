@@ -8,7 +8,7 @@ public:
 	{
 		DISTANCE, LERP_VALUE
 	};
-	static void setVertexAlongLine(vec4* vertexToMove, vec3 vertex1, vec3 vertex2, float manipulationValue, ManipulationType manipulationType);
+	static void setVertexAlongLine(vec4* vertexToMove, vec3 vertex1, vec3 vertex2, float manipulationValue, ManipulationType manipulationType, bool restrictWithinEdge);
 	VertexManipulationHelper();
 	~VertexManipulationHelper();
 };
