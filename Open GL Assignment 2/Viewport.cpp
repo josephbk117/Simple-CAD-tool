@@ -91,6 +91,7 @@ void Viewport::drawBorder()
 
 void Viewport::drawViewAxis()
 {
+	glLineWidth(2);
 	glBegin(GL_LINES);
 	if (viewAxis == ViewAxis::X_Y)
 	{
@@ -124,4 +125,5 @@ void Viewport::drawViewAxis()
 		glVertex2f(0.9f, -0.9f);
 	}
 	glEnd();
+	glLineWidth(1);
 }

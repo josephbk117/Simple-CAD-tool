@@ -203,11 +203,9 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 		count[i] = vertexSections[i].count;
 	}
 	glBindVertexArray(VAO);
-	glMultiDrawArrays(GL_TRIANGLES, first.data(), count.data(), vertexSections.size());
+	glMultiDrawArrays(GL_LINE_STRIP, first.data(), count.data(), vertexSections.size());
 	if (showVertices)
 		glMultiDrawArrays(GL_POINTS, first.data(), count.data(), vertexSections.size());
-	shader->setVec3("colour", glm::vec3(1, 1, 1));
-	glMultiDrawArrays(GL_LINES_ADJACENCY, first.data(), count.data(), vertexSections.size());
 	glBindVertexArray(0);
 }
 
