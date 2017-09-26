@@ -49,6 +49,7 @@ int main()
 {
 	mouseData.isLeftButtonPressed = false;
 	glfwInit();
+	//glfwWindowHint(GLFW_DEPTH_BITS, INT_MAX);
 	window = glfwCreateWindow(500, 500, "Open GL - Simple CAD Tool", NULL, NULL);
 	if (window == NULL)
 	{
@@ -87,8 +88,11 @@ int main()
 	Viewport viewportBottomRight(vec2(250, 0), vec2(250, 250), shader);
 
 	viewportBottomLeft.setViewportConvertion(-(500 / 4), (500 / 2) + (500 / 4));
+	viewportBottomLeft.setViewAxis(Viewport::ViewAxis::X_Y);
 	viewportBottomRight.setViewportConvertion(-500 + (500 / 4), (500 / 2) + (500 / 4));
+	viewportBottomRight.setViewAxis(Viewport::ViewAxis::Z_X);
 	viewportTopRight.setViewportConvertion(-500 + (500 / 4), (500 / 4));
+	viewportTopRight.setViewAxis(Viewport::ViewAxis::Y_Z);
 	viewportTopLeft.setViewportConvertion(-(500 / 4), (500 / 4));
 	activeViewport = &viewportBottomLeft;
 
@@ -99,7 +103,6 @@ int main()
 
 	camera.Position = vec3(0, 0, 3);
 
-	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	float timeValue = 0;
 
