@@ -7,6 +7,7 @@
 #include "Viewport.h"
 #include "VertexManipulationHelper.h"
 #include <vector>
+#include <algorithm>
 
 enum class InteractionModes
 {
@@ -39,6 +40,7 @@ struct MouseData
 {
 	float x, y;
 	bool isLeftButtonPressed;
+	bool isRightButtonPressed;
 }mouseData, mouseDataAtVertexSlideStart;
 
 bool firstMouse = true;
@@ -48,6 +50,7 @@ int currentlyActiveModelIndex = 0;
 int main()
 {
 	mouseData.isLeftButtonPressed = false;
+	mouseData.isRightButtonPressed = false;
 	glfwInit();
 	//glfwWindowHint(GLFW_DEPTH_BITS, INT_MAX);
 	window = glfwCreateWindow(500, 500, "Open GL - Simple CAD Tool", NULL, NULL);
@@ -192,6 +195,21 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 						currentlyHeldVertices[0]->x = transformedPoint.x;
 						currentlyHeldVertices[0]->y = transformedPoint.y;
 					}
+					else if (currentlyHeldVertices.size() > 1)
+					{
+						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
+						float xOffset = currentlyHeldVertices[0]->x - transformedPoint.x;
+						float yOffset = currentlyHeldVertices[0]->y - transformedPoint.y;
+						std::cout << "\nOffset values are : " << currentlyHeldVertices[0]->x - transformedPoint.x << " ," << currentlyHeldVertices[0]->y - transformedPoint.y;
+						currentlyHeldVertices[0]->x = transformedPoint.x;
+						currentlyHeldVertices[0]->y = transformedPoint.y;
+						
+						for (int i = 1; i < currentlyHeldVertices.size(); i++)
+						{
+							currentlyHeldVertices[i]->x = currentlyHeldVertices[i]->x - xOffset;
+							currentlyHeldVertices[i]->y = currentlyHeldVertices[i]->y - yOffset;
+						}
+					}
 				}
 				else if (activeViewport == viewports[2])
 				{
@@ -327,28 +345,26 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		}
 		else if (currentInteractionMode == InteractionModes::EDITING_VERTICES)
 		{
-			if (currentlyHeldVertices.size() <= 0)
+			activeViewport->getConvertedViewportCoord(x1, y1);
+			vec4* vertex = nullptr;
+			if (activeViewport == viewports[0])
 			{
-				activeViewport->getConvertedViewportCoord(x1, y1);
-				vec4* vertex = nullptr;
-				if (activeViewport == viewports[0])
-				{
-					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
-					vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, transformedPoint.y, NULL);
-				}
-				if (activeViewport == viewports[2])
-				{
-					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
-					vertex = activeModel->vertexAtViewportCoord(NULL, transformedPoint.y, transformedPoint.z);
-				}
-				if (activeViewport == viewports[3])
-				{
-					vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(y1, 0, x1, 1);
-					vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, NULL, transformedPoint.z);
-				}
-				if (vertex != nullptr)
-					currentlyHeldVertices.push_back(vertex);
+				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
+				vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, transformedPoint.y, NULL);
 			}
+			if (activeViewport == viewports[2])
+			{
+				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
+				vertex = activeModel->vertexAtViewportCoord(NULL, transformedPoint.y, transformedPoint.z);
+			}
+			if (activeViewport == viewports[3])
+			{
+				vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(y1, 0, x1, 1);
+				vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, NULL, transformedPoint.z);
+			}
+			if (vertex != nullptr)
+				currentlyHeldVertices.push_back(vertex);
+
 			std::vector<unsigned int> indices;
 			for (int i = 0; i < currentlyHeldVertices.size(); i++)
 				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
@@ -357,6 +373,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	}
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
 		mouseData.isLeftButtonPressed = false;
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		mouseData.isRightButtonPressed = true;
+	}
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action != GLFW_PRESS)
+		mouseData.isRightButtonPressed = false;
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
