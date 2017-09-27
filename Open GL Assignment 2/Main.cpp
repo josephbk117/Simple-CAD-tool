@@ -198,13 +198,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 					else if (currentlyHeldVertices.size() > 1)
 					{
 						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
-						float xOffset = currentlyHeldVertices[0]->x - transformedPoint.x;
-						float yOffset = currentlyHeldVertices[0]->y - transformedPoint.y;
-						std::cout << "\nOffset values are : " << currentlyHeldVertices[0]->x - transformedPoint.x << " ," << currentlyHeldVertices[0]->y - transformedPoint.y;
-						currentlyHeldVertices[0]->x = transformedPoint.x;
-						currentlyHeldVertices[0]->y = transformedPoint.y;
-						
-						for (int i = 1; i < currentlyHeldVertices.size(); i++)
+						float xOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->x - transformedPoint.x;
+						float yOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->y - transformedPoint.y;
+						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->x = transformedPoint.x;
+						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->y = transformedPoint.y;
+
+						for (int i = currentlyHeldVertices.size() - 2; i >= 0; i--)
 						{
 							currentlyHeldVertices[i]->x = currentlyHeldVertices[i]->x - xOffset;
 							currentlyHeldVertices[i]->y = currentlyHeldVertices[i]->y - yOffset;
