@@ -189,43 +189,59 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 			{
 				if (activeViewport == viewports[0])
 				{
-					if (currentlyHeldVertices.size() == 1)
-					{
-						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
-						currentlyHeldVertices[0]->x = transformedPoint.x;
-						currentlyHeldVertices[0]->y = transformedPoint.y;
-					}
-					else if (currentlyHeldVertices.size() > 1)
+					if (currentlyHeldVertices.size() >= 1)
 					{
 						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(x1, y1, 0, 1);
 						float xOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->x - transformedPoint.x;
 						float yOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->y - transformedPoint.y;
 						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->x = transformedPoint.x;
 						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->y = transformedPoint.y;
-
-						for (int i = currentlyHeldVertices.size() - 2; i >= 0; i--)
+						if (currentlyHeldVertices.size() > 1)
 						{
-							currentlyHeldVertices[i]->x = currentlyHeldVertices[i]->x - xOffset;
-							currentlyHeldVertices[i]->y = currentlyHeldVertices[i]->y - yOffset;
+							for (int i = currentlyHeldVertices.size() - 2; i >= 0; i--)
+							{
+								currentlyHeldVertices[i]->x = currentlyHeldVertices[i]->x - xOffset;
+								currentlyHeldVertices[i]->y = currentlyHeldVertices[i]->y - yOffset;
+							}
 						}
 					}
 				}
 				else if (activeViewport == viewports[2])
 				{
-					if (currentlyHeldVertices.size() == 1)
+					if (currentlyHeldVertices.size() >= 1)
 					{
 						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(0, y1, x1, 1);
-						currentlyHeldVertices[0]->y = transformedPoint.y;
-						currentlyHeldVertices[0]->z = transformedPoint.z;
+						float yOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->y - transformedPoint.y;
+						float zOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->z - transformedPoint.z;
+						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->y = transformedPoint.y;
+						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->z = transformedPoint.z;
+						if (currentlyHeldVertices.size() > 1)
+						{
+							for (int i = currentlyHeldVertices.size() - 2; i >= 0; i--)
+							{
+								currentlyHeldVertices[i]->y = currentlyHeldVertices[i]->y - yOffset;
+								currentlyHeldVertices[i]->z = currentlyHeldVertices[i]->z - zOffset;
+							}
+						}
 					}
 				}
 				else if (activeViewport == viewports[3])
 				{
-					if (currentlyHeldVertices.size() == 1)
+					if (currentlyHeldVertices.size() >= 1)
 					{
 						vec4 transformedPoint = inverse(activeModel->getTransform()) * vec4(y1, 0, x1, 1);
-						currentlyHeldVertices[0]->x = transformedPoint.x;
-						currentlyHeldVertices[0]->z = transformedPoint.z;
+						float xOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->x - transformedPoint.x;
+						float zOffset = currentlyHeldVertices[currentlyHeldVertices.size() - 1]->z - transformedPoint.z;
+						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->x = transformedPoint.x;
+						currentlyHeldVertices[currentlyHeldVertices.size() - 1]->z = transformedPoint.z;
+						if (currentlyHeldVertices.size() > 1)
+						{
+							for (int i = currentlyHeldVertices.size() - 2; i >= 0; i--)
+							{
+								currentlyHeldVertices[i]->x = currentlyHeldVertices[i]->x - xOffset;
+								currentlyHeldVertices[i]->z = currentlyHeldVertices[i]->z - zOffset;
+							}
+						}
 					}
 				}
 			}
