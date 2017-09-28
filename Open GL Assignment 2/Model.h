@@ -32,6 +32,7 @@ public:
 	void removeVertex(vec4* vertex, Model* model);
 	void setVerticesAsSelected(int* indices, unsigned int length);
 	void setVerticesAsSelected(const std::vector<unsigned int> indices);
+	void setVerticesAsSelected(std::vector<vec4 *> vertex);
 	void clearSelectedVertcies();
 	int getIndexOfVertex(vec4 *vertex);
 	vec4* vertexAtViewportCoord(float x, float y, float z);

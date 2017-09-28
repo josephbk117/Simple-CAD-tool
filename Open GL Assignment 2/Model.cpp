@@ -81,7 +81,27 @@ void Model::setVerticesAsSelected(const std::vector<unsigned int> indices)
 		}
 	}
 }
-
+void Model::setVerticesAsSelected(std::vector<vec4 *> vertices)
+{
+	if (vertices.size() <= 0)
+	{
+		for (int i = 0; i < vertexData.size(); i++)
+			vertexData[i].w = 0.0f;
+	}
+	for (int i = 0; i < vertexData.size(); i++)
+	{
+		for (int j = 0; j < vertices.size(); j++)
+		{
+			if (&vertexData[i] == vertices[j])
+			{
+				vertexData[i].w = 1.0f;
+				break;
+			}
+			else
+				vertexData[i].w = 0.0f;
+		}
+	}
+}
 void Model::clearSelectedVertcies()
 {
 	for (int i = 0; i < vertexData.size(); i++)

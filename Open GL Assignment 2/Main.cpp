@@ -391,10 +391,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				if (vertexNotAlreadyIncluded)
 					currentlyHeldVertices.push_back(vertex);
 			}
-			std::vector<unsigned int> indices;
-			for (int i = 0; i < currentlyHeldVertices.size(); i++)
-				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
-			activeModel->setVerticesAsSelected(indices);
+			activeModel->setVerticesAsSelected(currentlyHeldVertices);
 		}
 	}
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
