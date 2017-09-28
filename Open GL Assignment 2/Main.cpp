@@ -378,8 +378,19 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				vertex = activeModel->vertexAtViewportCoord(transformedPoint.x, NULL, transformedPoint.z);
 			}
 			if (vertex != nullptr)
-				currentlyHeldVertices.push_back(vertex);
-
+			{
+				bool vertexNotAlreadyIncluded = true;
+				for (int i = 0; i < currentlyHeldVertices.size(); i++)
+				{
+					if (vertex == currentlyHeldVertices[i])
+					{
+						vertexNotAlreadyIncluded = false;
+						break;
+					}
+				}
+				if (vertexNotAlreadyIncluded)
+					currentlyHeldVertices.push_back(vertex);
+			}
 			std::vector<unsigned int> indices;
 			for (int i = 0; i < currentlyHeldVertices.size(); i++)
 				indices.push_back(activeModel->getIndexOfVertex(currentlyHeldVertices[i]));
@@ -389,9 +400,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
 		mouseData.isLeftButtonPressed = false;
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-	{
 		mouseData.isRightButtonPressed = true;
-	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action != GLFW_PRESS)
 		mouseData.isRightButtonPressed = false;
 }
