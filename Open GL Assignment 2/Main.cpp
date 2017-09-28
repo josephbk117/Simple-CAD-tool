@@ -74,9 +74,8 @@ int main()
 	else
 		std::cout << " Glew initialsed" << std::endl;
 
-	Model vertexObj;
-	models.push_back(&vertexObj);
-	activeModel = &vertexObj;
+	activeModel = new Model;
+	models.push_back(activeModel);
 
 	ShaderProgram shader;
 	shader.compileShaders("F:\\Visual Studio 2017\\Projects\\Open GL Assignment 2\\Debug\\basic.vs",
