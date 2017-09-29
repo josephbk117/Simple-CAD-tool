@@ -43,8 +43,9 @@ public:
 	bool containsVertexData();
 	unsigned int getVertexCount();
 private:
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
 	std::vector<vec4> vertexData;
+	std::vector<unsigned int> vertexIndices;
 	std::vector<VertexSection> vertexSections;
 	mat4 transform;
 };

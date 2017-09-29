@@ -6,6 +6,7 @@ Model::Model()
 	addVertexFlowSplitIndex(0);
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 }
 
 Model::~Model()
@@ -17,6 +18,8 @@ void Model::updateMeshData()
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * 4 * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices.size() * sizeof(unsigned int), vertexIndices.data(), GL_DYNAMIC_DRAW);
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -196,11 +199,13 @@ void Model::addVertex(const vec3 &vertexPosition)
 void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
 {
 	vertexData.insert(vertexData.begin() + indexToPlaceVertex, vec4(vertexPosition, 0.0));
+	vertexIndices.push_back(indexToPlaceVertex);
 }
 
 void Model::addVertex(float x, float y, float z)
 {
 	vertexData.push_back(vec4(x, y, z, 0.0));
+	vertexIndices.push_back(vertexIndices.size());
 }
 
 void Model::display(bool showVertices, ShaderProgram *shader)
@@ -216,11 +221,15 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 	{
 		first[i] = vertexSections[i].first;
 		count[i] = vertexSections[i].count;
+		std::cout << "\nVertex section : " << i << " : " << first[i] << ", " << count[i];
 	}
 	glBindVertexArray(VAO);
-	glMultiDrawArrays(GL_LINE_STRIP, first.data(), count.data(), vertexSections.size());
+	/*glMultiDrawArrays(GL_LINE_STRIP, first.data(), count.data(), vertexSections.size());
 	if (showVertices)
-		glMultiDrawArrays(GL_POINTS, first.data(), count.data(), vertexSections.size());
+		glMultiDrawArrays(GL_POINTS, first.data(), count.data(), vertexSections.size());*/
+	glDrawElements(GL_LINE_STRIP, vertexIndices.size(), GL_UNSIGNED_INT, 0);
+	if (showVertices)
+		glDrawElements(GL_POINTS, vertexIndices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
