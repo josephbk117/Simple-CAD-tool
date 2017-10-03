@@ -19,7 +19,35 @@ void Model::updateMeshData()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * 4 * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices.size() * sizeof(unsigned int), vertexIndices.data(), GL_DYNAMIC_DRAW);
+
+	unsigned int dataCount = 0;
+	std::cout << "\n____________";
+	for (int i = 0; i < vertexSections.size(); i++)
+	{
+		dataCount += vertexSections[i].size();
+		std::cout << "\n-------::::-------";
+		for (int j = 0; j < vertexSections[i].size(); j++)
+		{
+			std::cout << "\nData : " << i << " " << j << " = " << vertexSections[i][j];
+		}
+	}
+
+	/*if (vertexData.size() > 1)
+	{
+		unsigned int indices[14] = {
+			0,1,
+			1,2,
+			2,3,
+			2,4,
+			2,5,
+			2,6,
+			2,7
+		};
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 14 * sizeof(unsigned int), indices, GL_DYNAMIC_DRAW);
+	}
+	else*/
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataCount * sizeof(unsigned int), &vertexSections[0][0], GL_DYNAMIC_DRAW);
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -198,14 +226,19 @@ void Model::addVertex(const vec3 &vertexPosition)
 
 void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
 {
-	vertexData.insert(vertexData.begin() + indexToPlaceVertex, vec4(vertexPosition, 0.0));
-	vertexIndices.push_back(indexToPlaceVertex);
+	//vertexData.insert(vertexData.begin() + indexToPlaceVertex, vec4(vertexPosition, 0.0));
+	//vertexIndices.push_back(indexToPlaceVertex);
+	//addVertex(vertexPosition.x, vertexPosition.y, vertexPosition.z);
+	vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
+	vertexSections[vertexSections.size() - 1].push_back(indexToPlaceVertex);
+	vertexSections[vertexSections.size() - 1].push_back(vertexData.size());
 }
 
 void Model::addVertex(float x, float y, float z)
 {
 	vertexData.push_back(vec4(x, y, z, 0.0));
 	vertexIndices.push_back(vertexIndices.size());
+	vertexSections[vertexSections.size() - 1].push_back(vertexData.size());
 }
 
 void Model::display(bool showVertices, ShaderProgram *shader)
@@ -213,27 +246,26 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 	glPointSize(5);
 	shader->use();
 	shader->setMat4("model", transform);
-	std::vector<GLint> first(vertexSections.size());
-	std::vector<GLsizei> count(vertexSections.size());
-	vertexSections[vertexSections.size() - 1].count =
-		vertexData.size() - vertexSections[vertexSections.size() - 1].first;
+
+	unsigned int numberOfData = 0;
 	for (int i = 0; i < vertexSections.size(); i++)
 	{
-		first[i] = vertexSections[i].first;
-		count[i] = vertexSections[i].count;
-		std::cout << "\nVertex section : " << i << " : " << first[i] << ", " << count[i];
+		numberOfData += vertexSections[i].size();
 	}
+
 	glBindVertexArray(VAO);
-	/*glMultiDrawArrays(GL_LINE_STRIP, first.data(), count.data(), vertexSections.size());
+
+	glDrawElements(GL_LINE_STRIP, numberOfData - 1, GL_UNSIGNED_INT, 0);
 	if (showVertices)
-		glMultiDrawArrays(GL_POINTS, first.data(), count.data(), vertexSections.size());*/
-	glDrawElements(GL_LINE_STRIP, vertexIndices.size(), GL_UNSIGNED_INT, 0);
-	if (showVertices)
-		glDrawElements(GL_POINTS, vertexIndices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_POINTS, numberOfData - 1, GL_UNSIGNED_INT, 0);
+
+
 	glBindVertexArray(0);
 }
 
 void Model::addVertexFlowSplitIndex(unsigned int index)
 {
-	vertexSections.push_back(VertexSection(index, vertexData.size() - index));
+	std::vector<unsigned int> newData;
+	newData.push_back(index);
+	vertexSections.push_back(newData);
 }
