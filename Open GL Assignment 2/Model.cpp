@@ -1,9 +1,11 @@
 #include "Model.h"
+/*
+	Allow user to create new vertices from the specified vertex
 
+*/
 Model::Model()
 {
 	transform = glm::mat4(1);
-	addVertexFlowSplitIndex(0);
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -13,6 +15,26 @@ Model::~Model()
 {
 }
 
+void Model::display(bool showVertices, ShaderProgram *shader)
+{
+	glPointSize(5);
+	shader->use();
+	shader->setMat4("model", transform);
+
+	/*unsigned int numberOfData = 0;
+	for (int i = 0; i < vertexSections.size(); i++)
+	{
+		numberOfData += vertexSections.size();
+	}*/
+
+	glBindVertexArray(VAO);
+
+	glDrawElements(GL_LINES, vertexSections.size() - 1, GL_UNSIGNED_INT, 0);
+	if (showVertices)
+		glDrawElements(GL_POINTS, vertexSections.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
 void Model::updateMeshData()
 {
 	glBindVertexArray(VAO);
@@ -20,8 +42,8 @@ void Model::updateMeshData()
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * 4 * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-	unsigned int dataCount = 0;
-	std::cout << "\n____________";
+	unsigned int dataCount = vertexSections.size();
+	/*std::cout << "\n____________";
 	for (int i = 0; i < vertexSections.size(); i++)
 	{
 		dataCount += vertexSections[i].size();
@@ -30,24 +52,9 @@ void Model::updateMeshData()
 		{
 			std::cout << "\nData : " << i << " " << j << " = " << vertexSections[i][j];
 		}
-	}
-
-	/*if (vertexData.size() > 1)
-	{
-		unsigned int indices[14] = {
-			0,1,
-			1,2,
-			2,3,
-			2,4,
-			2,5,
-			2,6,
-			2,7
-		};
-
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 14 * sizeof(unsigned int), indices, GL_DYNAMIC_DRAW);
-	}
-	else*/
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataCount * sizeof(unsigned int), &vertexSections[0][0], GL_DYNAMIC_DRAW);
+	}*/
+	if (vertexSections.size() > 0)
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataCount * sizeof(unsigned int), vertexSections.data(), GL_DYNAMIC_DRAW);
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -226,46 +233,30 @@ void Model::addVertex(const vec3 &vertexPosition)
 
 void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
 {
-	//vertexData.insert(vertexData.begin() + indexToPlaceVertex, vec4(vertexPosition, 0.0));
-	//vertexIndices.push_back(indexToPlaceVertex);
-	//addVertex(vertexPosition.x, vertexPosition.y, vertexPosition.z);
 	vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
-	vertexSections[vertexSections.size() - 1].push_back(indexToPlaceVertex);
-	vertexSections[vertexSections.size() - 1].push_back(vertexData.size());
+	vertexSections.push_back(indexToPlaceVertex);
+	vertexSections.push_back(vertexData.size());
 }
-
+static int countVal = 0;
 void Model::addVertex(float x, float y, float z)
 {
 	vertexData.push_back(vec4(x, y, z, 0.0));
-	vertexIndices.push_back(vertexIndices.size());
-	vertexSections[vertexSections.size() - 1].push_back(vertexData.size());
-}
 
-void Model::display(bool showVertices, ShaderProgram *shader)
-{
-	glPointSize(5);
-	shader->use();
-	shader->setMat4("model", transform);
-
-	unsigned int numberOfData = 0;
-	for (int i = 0; i < vertexSections.size(); i++)
+	if (vertexSections.size() < 2)
 	{
-		numberOfData += vertexSections[i].size();
+		vertexSections.push_back(countVal++);
 	}
+	else
+	{
+		int sizeValue = vertexSections.size() - 1;
+		unsigned int lastIndexValue = vertexSections[sizeValue];
 
-	glBindVertexArray(VAO);
-
-	glDrawElements(GL_LINE_STRIP, numberOfData - 1, GL_UNSIGNED_INT, 0);
-	if (showVertices)
-		glDrawElements(GL_POINTS, numberOfData - 1, GL_UNSIGNED_INT, 0);
-
-
-	glBindVertexArray(0);
+		vertexSections.push_back(lastIndexValue);
+		vertexSections.push_back(lastIndexValue + 1);
+	}
 }
 
 void Model::addVertexFlowSplitIndex(unsigned int index)
 {
-	std::vector<unsigned int> newData;
-	newData.push_back(index);
-	vertexSections.push_back(newData);
+	vertexSections.push_back(index);
 }

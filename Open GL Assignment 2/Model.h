@@ -45,8 +45,7 @@ public:
 private:
 	unsigned int VBO, VAO, EBO;
 	std::vector<vec4> vertexData;
-	std::vector<unsigned int> vertexIndices;
-	std::vector<std::vector<unsigned int>> vertexSections;
+	std::vector<unsigned int> vertexSections;
 	mat4 transform;
 };
 

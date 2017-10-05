@@ -263,6 +263,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		}
 	}
 }
+
 void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
@@ -300,7 +301,9 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 				for (int i = 0; i < currentlyHeldVertices.size(); i++)
 				{
 					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
-					//activeModel->addVertexFlowSplitIndex(indexOfVertex + 1);
+					std::cout << "\nSelected index = " << indexOfVertex;
+					//activeModel->addVertexFlowSplitIndex(indexOfVertex + 1
+					
 					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
 				}
 				activeModel->updateMeshData();
