@@ -302,8 +302,8 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 				{
 					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
 					std::cout << "\nSelected index = " << indexOfVertex;
-					//activeModel->addVertexFlowSplitIndex(indexOfVertex + 1
-					
+					//activeModel->addVertexFlowSplitIndex(indexOfVertex);
+
 					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
 				}
 				activeModel->updateMeshData();

@@ -20,16 +20,9 @@ void Model::display(bool showVertices, ShaderProgram *shader)
 	glPointSize(5);
 	shader->use();
 	shader->setMat4("model", transform);
-
-	/*unsigned int numberOfData = 0;
-	for (int i = 0; i < vertexSections.size(); i++)
-	{
-		numberOfData += vertexSections.size();
-	}*/
-
 	glBindVertexArray(VAO);
 
-	glDrawElements(GL_LINES, vertexSections.size() - 1, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINES, vertexSections.size(), GL_UNSIGNED_INT, 0);
 	if (showVertices)
 		glDrawElements(GL_POINTS, vertexSections.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -42,19 +35,13 @@ void Model::updateMeshData()
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * 4 * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-	unsigned int dataCount = vertexSections.size();
-	/*std::cout << "\n____________";
+	std::cout << "\n____________";
 	for (int i = 0; i < vertexSections.size(); i++)
 	{
-		dataCount += vertexSections[i].size();
-		std::cout << "\n-------::::-------";
-		for (int j = 0; j < vertexSections[i].size(); j++)
-		{
-			std::cout << "\nData : " << i << " " << j << " = " << vertexSections[i][j];
-		}
-	}*/
+		std::cout << "\nVetex Sections at " << i << " = " << vertexSections[i];
+	}
 	if (vertexSections.size() > 0)
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataCount * sizeof(unsigned int), vertexSections.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexSections.size() * sizeof(unsigned int), vertexSections.data(), GL_DYNAMIC_DRAW);
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -233,15 +220,15 @@ void Model::addVertex(const vec3 &vertexPosition)
 
 void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
 {
-	vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
+	//vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
 	vertexSections.push_back(indexToPlaceVertex);
-	vertexSections.push_back(vertexData.size());
+	//vertexSections.push_back(indexToPlaceVertex + 1);
+	//vertexSections.push_back(vertexData.size());
 }
 static int countVal = 0;
 void Model::addVertex(float x, float y, float z)
 {
 	vertexData.push_back(vec4(x, y, z, 0.0));
-
 	if (vertexSections.size() < 2)
 	{
 		vertexSections.push_back(countVal++);
