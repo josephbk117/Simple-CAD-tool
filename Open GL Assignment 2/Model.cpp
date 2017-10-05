@@ -220,10 +220,10 @@ void Model::addVertex(const vec3 &vertexPosition)
 
 void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
 {
-	//vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
+	vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
 	vertexSections.push_back(indexToPlaceVertex);
 	//vertexSections.push_back(indexToPlaceVertex + 1);
-	//vertexSections.push_back(vertexData.size());
+	vertexSections.push_back(vertexData.size() - 1);
 }
 static int countVal = 0;
 void Model::addVertex(float x, float y, float z)
