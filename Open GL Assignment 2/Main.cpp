@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Viewport.h"
 #include "VertexManipulationHelper.h"
+#include "PrimitiveCreationHelper.h"
 #include <vector>
 #include <algorithm>
 
@@ -74,7 +75,7 @@ int main()
 	else
 		std::cout << " Glew initialsed" << std::endl;
 
-	activeModel = new Model;
+	activeModel = PrimitiveCreationHelper::createPrimitive(PrimitiveType::SPHERE);//new Model;
 	models.push_back(activeModel);
 
 	ShaderProgram shader;

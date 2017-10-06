@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PrimitiveCreationHelper.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="VertexManipulationHelper.h" />
     <ClInclude Include="Viewport.h" />
