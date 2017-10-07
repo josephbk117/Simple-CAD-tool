@@ -30,28 +30,20 @@ public:
 private:
 	static Model* createSphere()
 	{
-		/*
-		x = x0 + rcosO + sinY
-		y = y0 + rsinO + sinY
-		z = z0 + rcosY
-
-		0 <= O <= 2PI
-		0 <= Y <= PI
-		*/
 		Model* sphere = new Model;
-		const float RADIUS = 30.0f;
-		const float OMEGA_INC = pi<float>() / 10.0f;
-		const float THETA_INC = (2.0f*pi<float>()) / 10.0f;
+		int const COUNT = 10;
+		float const THETA_INC = 2 * pi<float>() / (float)COUNT;
+		float const OMEGA_INC = pi<float>() / (float)COUNT;
+		float const RADIUS = 60.0f;
 
-		for (int i = 0; i < 11; i++)
+		for (int i = 0; i <= COUNT; i++)
 		{
-			for (int j = 0; j < 11; j++)
+			for (int j = 0; j <= COUNT; j++)
 			{
-				float X = 0, Y = 0, Z = 0;
-				X = (RADIUS * cos(i * THETA_INC)) + sin(j * OMEGA_INC);
-				Y = (RADIUS * sin(i * THETA_INC)) + sin(j * OMEGA_INC);
-				Z = RADIUS * cos(j * OMEGA_INC);
-				sphere->addVertex(X, Y, Z);
+				float x = RADIUS * sin(j * THETA_INC) * sin(i * OMEGA_INC);
+				float y = RADIUS * cos(j * THETA_INC) * sin(i * OMEGA_INC);
+				float z = RADIUS * cos(i * OMEGA_INC);
+				sphere->addVertex(x, y, z);
 			}
 		}
 		sphere->updateMeshData();
