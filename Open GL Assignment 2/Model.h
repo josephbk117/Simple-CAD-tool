@@ -34,14 +34,14 @@ public:
 	void setVerticesAsSelected(const std::vector<unsigned int> indices);
 	void setVerticesAsSelected(std::vector<vec4 *> vertex);
 	void clearSelectedVertcies();
-	int getIndexOfVertex(vec4 *vertex);
-	vec4* vertexAtViewportCoord(float x, float y, float z);
-	vec4* vertexAtIndex(unsigned int index);
 	void translate(const vec3 &translateVector);
 	void setTransform(const mat4 &transformMaipulation);
-	mat4 getTransform();
+	int getIndexOfVertex(vec4 *vertex);
 	bool containsVertexData();
 	unsigned int getVertexCount();
+	vec4* vertexAtViewportCoord(float x, float y, float z);
+	vec4* vertexAtIndex(unsigned int index);
+	mat4 getTransform();
 private:
 	unsigned int VBO, VAO, EBO;
 	std::vector<vec4> vertexData;
