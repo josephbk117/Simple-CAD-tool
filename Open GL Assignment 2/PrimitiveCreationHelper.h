@@ -15,10 +15,9 @@ public:
 		switch (primitive)
 		{
 		case PrimitiveType::CUBE:
-			break;
+			return createCube();
 		case PrimitiveType::SPHERE:
 			return createSphere();
-			break;
 		case PrimitiveType::CYLINDER:
 			break;
 		case PrimitiveType::CONE:
@@ -48,6 +47,24 @@ private:
 		}
 		sphere->updateMeshData();
 		return sphere;
+	}
+	static Model* createCube()
+	{
+		Model* cube = new Model;
+		const float SIZE = 60.0f;
+
+		cube->addVertex(SIZE, SIZE, SIZE);
+		cube->addVertex(-SIZE, SIZE, SIZE);
+		cube->addVertex(-SIZE, -SIZE, SIZE);
+		cube->addVertex(SIZE, -SIZE, SIZE);
+
+		cube->addVertex(SIZE, SIZE, -SIZE);
+		cube->addVertex(-SIZE, SIZE, -SIZE);
+		cube->addVertex(-SIZE, -SIZE, -SIZE);
+		cube->addVertex(SIZE, -SIZE, -SIZE);
+
+		cube->updateMeshData();
+		return cube;
 	}
 };
 
