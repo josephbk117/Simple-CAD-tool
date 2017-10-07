@@ -21,7 +21,7 @@ public:
 		case PrimitiveType::CYLINDER:
 			break;
 		case PrimitiveType::CONE:
-			break;
+			return createCone();
 		default:
 			break;
 		}
@@ -65,6 +65,25 @@ private:
 
 		cube->updateMeshData();
 		return cube;
+	}
+	static Model* createCone()
+	{
+		Model* cone = new Model;
+		int const COUNT = 10;
+		float const THETA_INC = 2 * pi<float>() / (float)COUNT;
+		float const RADIUS = 60.0f;
+
+		for (int j = 0; j <= COUNT; j++)
+		{
+			float x = RADIUS * sin(j * THETA_INC);
+			float z = RADIUS * cos(j * THETA_INC);
+			cone->addVertex(x, 0, z);
+		}
+
+		cone->addVertex(0, RADIUS, 0);
+
+		cone->updateMeshData();
+		return cone;
 	}
 };
 
