@@ -247,3 +247,9 @@ void Model::addVertexFlowSplitIndex(unsigned int index)
 {
 	vertexSections.push_back(index);
 }
+
+void Model::addVertexFlowSplitPair(unsigned int index1, unsigned int index2)
+{
+	addVertexFlowSplitIndex(index1);
+	addVertexFlowSplitIndex(index2);
+}

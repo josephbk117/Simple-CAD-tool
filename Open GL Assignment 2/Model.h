@@ -29,6 +29,7 @@ public:
 	void addVertexWithNoIndexData(float x, float y, float z);
 	void display(bool showVertices, ShaderProgram *shader);
 	void addVertexFlowSplitIndex(unsigned int index);
+	void addVertexFlowSplitPair(unsigned int index1, unsigned int index2);
 	void updateMeshData();
 	void removeVertex(vec4* vertex, Model* model);
 	void setVerticesAsSelected(int* indices, unsigned int length);

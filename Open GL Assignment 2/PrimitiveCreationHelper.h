@@ -34,7 +34,7 @@ private:
 		float const THETA_INC = 2 * pi<float>() / (float)COUNT;
 		float const OMEGA_INC = pi<float>() / (float)COUNT;
 		float const RADIUS = 60.0f;
-
+		int numberIters = 0;
 		for (int i = 0; i <= COUNT; i++)
 		{
 			for (int j = 0; j <= COUNT; j++)
@@ -42,7 +42,10 @@ private:
 				float x = RADIUS * sin(j * THETA_INC) * sin(i * OMEGA_INC);
 				float y = RADIUS * cos(j * THETA_INC) * sin(i * OMEGA_INC);
 				float z = RADIUS * cos(i * OMEGA_INC);
-				sphere->addVertex(x, y, z);
+				sphere->addVertexWithNoIndexData(x, y, z);
+				sphere->addVertexFlowSplitPair(numberIters, min(numberIters + 1,100));
+				sphere->addVertexFlowSplitPair(numberIters, max(numberIters - (COUNT+1), 0));
+				numberIters++;
 			}
 		}
 		sphere->updateMeshData();
@@ -53,52 +56,30 @@ private:
 		Model* cube = new Model;
 		const float SIZE = 60.0f;
 
-		cube->addVertexWithNoIndexData(SIZE, SIZE, SIZE);//0
-		cube->addVertexWithNoIndexData(-SIZE, SIZE, SIZE);//1
-		cube->addVertexWithNoIndexData(-SIZE, -SIZE, SIZE);//2
-		cube->addVertexWithNoIndexData(SIZE, -SIZE, SIZE);//3
+		cube->addVertexWithNoIndexData(SIZE, SIZE, SIZE);
+		cube->addVertexWithNoIndexData(-SIZE, SIZE, SIZE);
+		cube->addVertexWithNoIndexData(-SIZE, -SIZE, SIZE);
+		cube->addVertexWithNoIndexData(SIZE, -SIZE, SIZE);
 
-		cube->addVertexWithNoIndexData(SIZE, SIZE, -SIZE);//4
-		cube->addVertexWithNoIndexData(-SIZE, SIZE, -SIZE);//5
-		cube->addVertexWithNoIndexData(-SIZE, -SIZE, -SIZE);//6
-		cube->addVertexWithNoIndexData(SIZE, -SIZE, -SIZE);//7
-		//____SQUARE 1___
-		cube->addVertexFlowSplitIndex(0);
-		cube->addVertexFlowSplitIndex(1);
+		cube->addVertexWithNoIndexData(SIZE, SIZE, -SIZE);
+		cube->addVertexWithNoIndexData(-SIZE, SIZE, -SIZE);
+		cube->addVertexWithNoIndexData(-SIZE, -SIZE, -SIZE);
+		cube->addVertexWithNoIndexData(SIZE, -SIZE, -SIZE);
 
-		cube->addVertexFlowSplitIndex(1);
-		cube->addVertexFlowSplitIndex(2);
+		cube->addVertexFlowSplitPair(0, 1);
+		cube->addVertexFlowSplitPair(1, 2);
+		cube->addVertexFlowSplitPair(2, 3);
+		cube->addVertexFlowSplitPair(3, 0);
 
-		cube->addVertexFlowSplitIndex(2);
-		cube->addVertexFlowSplitIndex(3);
+		cube->addVertexFlowSplitPair(4, 5);
+		cube->addVertexFlowSplitPair(5, 6);
+		cube->addVertexFlowSplitPair(6, 7);
+		cube->addVertexFlowSplitPair(7, 4);
 
-		cube->addVertexFlowSplitIndex(3);
-		cube->addVertexFlowSplitIndex(0);
-
-		//___SQUARE 2___
-		cube->addVertexFlowSplitIndex(4);
-		cube->addVertexFlowSplitIndex(5);
-
-		cube->addVertexFlowSplitIndex(5);
-		cube->addVertexFlowSplitIndex(6);
-
-		cube->addVertexFlowSplitIndex(6);
-		cube->addVertexFlowSplitIndex(7);
-
-		cube->addVertexFlowSplitIndex(7);
-		cube->addVertexFlowSplitIndex(4);
-		//___CONNECTING LINE___
-		cube->addVertexFlowSplitIndex(0);
-		cube->addVertexFlowSplitIndex(4);
-
-		cube->addVertexFlowSplitIndex(1);
-		cube->addVertexFlowSplitIndex(5);
-
-		cube->addVertexFlowSplitIndex(2);
-		cube->addVertexFlowSplitIndex(6);
-
-		cube->addVertexFlowSplitIndex(3);
-		cube->addVertexFlowSplitIndex(7);
+		cube->addVertexFlowSplitPair(0, 4);
+		cube->addVertexFlowSplitPair(1, 5);
+		cube->addVertexFlowSplitPair(2, 6);
+		cube->addVertexFlowSplitPair(3, 7);
 
 		cube->updateMeshData();
 		return cube;
@@ -115,11 +96,8 @@ private:
 			float x = RADIUS * sin(j * THETA_INC);
 			float z = RADIUS * cos(j * THETA_INC);
 			cone->addVertexWithNoIndexData(x, -RADIUS / 2, z);
-			cone->addVertexFlowSplitIndex(j);
-			cone->addVertexFlowSplitIndex((j + 1) % COUNT);
-			cone->addVertexFlowSplitIndex(j);
-			cone->addVertexFlowSplitIndex(10);
-
+			cone->addVertexFlowSplitPair(j, (j + 1) % COUNT);
+			cone->addVertexFlowSplitPair(j, 10);
 		}
 		cone->addVertexWithNoIndexData(0, RADIUS / 2, 0);
 		cone->updateMeshData();
@@ -137,10 +115,8 @@ private:
 			float x = RADIUS * sin(j * THETA_INC);
 			float z = RADIUS * cos(j * THETA_INC);
 			cylinder->addVertexWithNoIndexData(x, -RADIUS, z);
-			cylinder->addVertexFlowSplitIndex(j);
-			cylinder->addVertexFlowSplitIndex((j + 1) % COUNT);
-			cylinder->addVertexFlowSplitIndex(j);
-			cylinder->addVertexFlowSplitIndex(j + COUNT);
+			cylinder->addVertexFlowSplitPair(j, (j + 1) % COUNT);
+			cylinder->addVertexFlowSplitPair(j, j + COUNT);
 		}
 
 		for (int j = 0; j < COUNT; j++)
@@ -148,8 +124,7 @@ private:
 			float x = RADIUS * sin(j * THETA_INC);
 			float z = RADIUS * cos(j * THETA_INC);
 			cylinder->addVertexWithNoIndexData(x, RADIUS, z);
-			cylinder->addVertexFlowSplitIndex(j + COUNT);
-			cylinder->addVertexFlowSplitIndex(((j + 1) % COUNT) + COUNT);
+			cylinder->addVertexFlowSplitPair(j + COUNT, ((j + 1) % COUNT) + COUNT);
 		}
 
 		cylinder->updateMeshData();
