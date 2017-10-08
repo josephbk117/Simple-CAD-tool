@@ -95,18 +95,24 @@ private:
 		float const THETA_INC = 2 * pi<float>() / (float)COUNT;
 		float const RADIUS = 60.0f;
 
-		for (int j = 0; j <= COUNT; j++)
+		for (int j = 0; j < COUNT; j++)
 		{
 			float x = RADIUS * sin(j * THETA_INC);
 			float z = RADIUS * cos(j * THETA_INC);
-			cylinder->addVertex(x, -RADIUS, z);
+			cylinder->addVertexWithNoIndexData(x, -RADIUS, z);
+			cylinder->addVertexFlowSplitIndex(j);
+			cylinder->addVertexFlowSplitIndex((j + 1) % COUNT);
+			cylinder->addVertexFlowSplitIndex(j);
+			cylinder->addVertexFlowSplitIndex(j + COUNT);
 		}
 
-		for (int j = 0; j <= COUNT; j++)
+		for (int j = 0; j < COUNT; j++)
 		{
 			float x = RADIUS * sin(j * THETA_INC);
 			float z = RADIUS * cos(j * THETA_INC);
-			cylinder->addVertex(x, RADIUS, z);
+			cylinder->addVertexWithNoIndexData(x, RADIUS, z);
+			cylinder->addVertexFlowSplitIndex(j + COUNT);
+			cylinder->addVertexFlowSplitIndex(((j + 1) % COUNT) + COUNT);
 		}
 
 		cylinder->updateMeshData();

@@ -75,7 +75,7 @@ int main()
 	else
 		std::cout << " Glew initialsed" << std::endl;
 
-	activeModel = PrimitiveCreationHelper::createPrimitive(PrimitiveType::CONE);
+	activeModel = PrimitiveCreationHelper::createPrimitive(PrimitiveType::CYLINDER);
 	models.push_back(activeModel);
 
 	ShaderProgram shader;
