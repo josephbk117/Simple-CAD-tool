@@ -73,17 +73,18 @@ private:
 		float const THETA_INC = 2 * pi<float>() / (float)COUNT;
 		float const RADIUS = 60.0f;
 
-		for (int j = 0; j <= COUNT; j++)
+		for (int j = 0; j < COUNT; j++)
 		{
 			float x = RADIUS * sin(j * THETA_INC);
 			float z = RADIUS * cos(j * THETA_INC);
-			cone->addVertex(x, 0, z);
+			cone->addVertexWithNoIndexData(x, -RADIUS / 2, z);
+			cone->addVertexFlowSplitIndex(j);
+			cone->addVertexFlowSplitIndex((j + 1) % COUNT);
 			cone->addVertexFlowSplitIndex(j);
 			cone->addVertexFlowSplitIndex(10);
-			//cone->addVertexFlowSplitIndex(j);
-			//cone->addVertexFlowSplitIndex(j+1);
+
 		}
-		cone->addVertex(0, RADIUS, 0);
+		cone->addVertexWithNoIndexData(0, RADIUS / 2, 0);
 		cone->updateMeshData();
 		return cone;
 	}
@@ -107,7 +108,7 @@ private:
 			float z = RADIUS * cos(j * THETA_INC);
 			cylinder->addVertex(x, RADIUS, z);
 		}
-		
+
 		cylinder->updateMeshData();
 		return cylinder;
 	}

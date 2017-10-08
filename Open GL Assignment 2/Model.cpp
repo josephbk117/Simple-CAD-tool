@@ -238,6 +238,11 @@ void Model::addVertex(float x, float y, float z)
 	}
 }
 
+void Model::addVertexWithNoIndexData(float x, float y, float z)
+{
+	vertexData.push_back(vec4(x, y, z, 0.0));
+}
+
 void Model::addVertexFlowSplitIndex(unsigned int index)
 {
 	vertexSections.push_back(index);

@@ -26,6 +26,7 @@ public:
 	void addVertex(const vec3 &vertexPosition);
 	void addVertex(const vec3 &vertexPosition, unsigned int indexToPlaceVertex);
 	void addVertex(float x, float y, float z);
+	void addVertexWithNoIndexData(float x, float y, float z);
 	void display(bool showVertices, ShaderProgram *shader);
 	void addVertexFlowSplitIndex(unsigned int index);
 	void updateMeshData();
