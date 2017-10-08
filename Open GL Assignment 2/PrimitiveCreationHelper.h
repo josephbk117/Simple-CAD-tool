@@ -53,15 +53,52 @@ private:
 		Model* cube = new Model;
 		const float SIZE = 60.0f;
 
-		cube->addVertex(SIZE, SIZE, SIZE);
-		cube->addVertex(-SIZE, SIZE, SIZE);
-		cube->addVertex(-SIZE, -SIZE, SIZE);
-		cube->addVertex(SIZE, -SIZE, SIZE);
+		cube->addVertexWithNoIndexData(SIZE, SIZE, SIZE);//0
+		cube->addVertexWithNoIndexData(-SIZE, SIZE, SIZE);//1
+		cube->addVertexWithNoIndexData(-SIZE, -SIZE, SIZE);//2
+		cube->addVertexWithNoIndexData(SIZE, -SIZE, SIZE);//3
 
-		cube->addVertex(SIZE, SIZE, -SIZE);
-		cube->addVertex(-SIZE, SIZE, -SIZE);
-		cube->addVertex(-SIZE, -SIZE, -SIZE);
-		cube->addVertex(SIZE, -SIZE, -SIZE);
+		cube->addVertexWithNoIndexData(SIZE, SIZE, -SIZE);//4
+		cube->addVertexWithNoIndexData(-SIZE, SIZE, -SIZE);//5
+		cube->addVertexWithNoIndexData(-SIZE, -SIZE, -SIZE);//6
+		cube->addVertexWithNoIndexData(SIZE, -SIZE, -SIZE);//7
+		//____SQUARE 1___
+		cube->addVertexFlowSplitIndex(0);
+		cube->addVertexFlowSplitIndex(1);
+
+		cube->addVertexFlowSplitIndex(1);
+		cube->addVertexFlowSplitIndex(2);
+
+		cube->addVertexFlowSplitIndex(2);
+		cube->addVertexFlowSplitIndex(3);
+
+		cube->addVertexFlowSplitIndex(3);
+		cube->addVertexFlowSplitIndex(0);
+
+		//___SQUARE 2___
+		cube->addVertexFlowSplitIndex(4);
+		cube->addVertexFlowSplitIndex(5);
+
+		cube->addVertexFlowSplitIndex(5);
+		cube->addVertexFlowSplitIndex(6);
+
+		cube->addVertexFlowSplitIndex(6);
+		cube->addVertexFlowSplitIndex(7);
+
+		cube->addVertexFlowSplitIndex(7);
+		cube->addVertexFlowSplitIndex(4);
+		//___CONNECTING LINE___
+		cube->addVertexFlowSplitIndex(0);
+		cube->addVertexFlowSplitIndex(4);
+
+		cube->addVertexFlowSplitIndex(1);
+		cube->addVertexFlowSplitIndex(5);
+
+		cube->addVertexFlowSplitIndex(2);
+		cube->addVertexFlowSplitIndex(6);
+
+		cube->addVertexFlowSplitIndex(3);
+		cube->addVertexFlowSplitIndex(7);
 
 		cube->updateMeshData();
 		return cube;
