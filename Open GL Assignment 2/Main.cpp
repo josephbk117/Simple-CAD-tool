@@ -12,7 +12,7 @@
 
 enum class InteractionModes
 {
-	ADDING_VERTICES, EDITING_VERTICES, MODEL_CYCLE_THROUGH
+	ADDING_VERTICES, EDITING_VERTICES, MODEL_CYCLE_THROUGH, PRIMITIVE_CREATE
 };
 enum class VertexManipulationMode
 {
@@ -75,7 +75,7 @@ int main()
 	else
 		std::cout << " Glew initialsed" << std::endl;
 
-	activeModel = PrimitiveCreationHelper::createPrimitive(PrimitiveType::SPHERE);
+	activeModel = PrimitiveCreationHelper::createPrimitive(PrimitiveType::CUBE);
 	models.push_back(activeModel);
 
 	ShaderProgram shader;
@@ -339,6 +339,14 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 				activeModel->updateMeshData();
 			}
 		}
+		if (key == GLFW_KEY_1)
+			models.push_back(PrimitiveCreationHelper::createPrimitive(PrimitiveType::CUBE));
+		if (key == GLFW_KEY_2)
+			models.push_back(PrimitiveCreationHelper::createPrimitive(PrimitiveType::CONE));
+		if (key == GLFW_KEY_3)
+			models.push_back(PrimitiveCreationHelper::createPrimitive(PrimitiveType::CYLINDER));
+		if (key == GLFW_KEY_4)
+			models.push_back(PrimitiveCreationHelper::createPrimitive(PrimitiveType::SPHERE));
 	}
 }
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
