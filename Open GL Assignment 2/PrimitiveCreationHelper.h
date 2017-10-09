@@ -43,7 +43,7 @@ private:
 				float y = RADIUS * cos(j * THETA_INC) * sin(i * OMEGA_INC);
 				float z = RADIUS * cos(i * OMEGA_INC);
 				sphere->addVertexWithNoIndexData(x, y, z);
-				sphere->addVertexFlowSplitPair(numberIters, min(numberIters + 1,100));
+				sphere->addVertexFlowSplitPair(numberIters, min(numberIters + 1,110));
 				sphere->addVertexFlowSplitPair(numberIters, max(numberIters - (COUNT+1), 0));
 				numberIters++;
 			}
