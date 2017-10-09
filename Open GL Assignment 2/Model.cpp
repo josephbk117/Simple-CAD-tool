@@ -36,7 +36,7 @@ void Model::updateMeshData()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	std::cout << "\n____________";
-	for (int i = 0; i < vertexSections.size(); i++)
+	for (unsigned int i = 0; i < vertexSections.size(); i++)
 	{
 		std::cout << "\nVetex Sections at " << i << " = " << vertexSections[i];
 	}
@@ -54,7 +54,7 @@ void Model::updateMeshData()
 void Model::removeVertex(vec4* vertex, Model* model)
 {
 	std::cout << "\nVertex count = " << vertexData.size();
-	for (int i = 0; i < vertexData.size(); i++)
+	for (unsigned int i = 0; i < vertexData.size(); i++)
 	{
 		if (vertex == &vertexData[i])
 		{
@@ -67,7 +67,7 @@ void Model::setVerticesAsSelected(int* indices, unsigned int length)
 {
 	if (length <= 0)
 	{
-		for (int i = 0; i < length; i++)
+		for (unsigned int i = 0; i < length; i++)
 			vertexData[i].w = 0.0f;
 	}
 	for (int i = 0; i < length; i++)
@@ -89,10 +89,10 @@ void Model::setVerticesAsSelected(const std::vector<unsigned int> indices)
 {
 	if (indices.size() <= 0)
 	{
-		for (int i = 0; i < vertexData.size(); i++)
+		for (unsigned int i = 0; i < vertexData.size(); i++)
 			vertexData[i].w = 0.0f;
 	}
-	for (int i = 0; i < vertexData.size(); i++)
+	for (unsigned int i = 0; i < vertexData.size(); i++)
 	{
 		for (int j = 0; j < indices.size(); j++)
 		{
@@ -129,22 +129,23 @@ void Model::setVerticesAsSelected(std::vector<vec4 *> vertices)
 }
 void Model::clearSelectedVertcies()
 {
-	for (int i = 0; i < vertexData.size(); i++)
+	for (unsigned int i = 0; i < vertexData.size(); i++)
 		vertexData[i].w = 0.0f;
 }
 
 int Model::getIndexOfVertex(vec4 *vertex)
 {
-	for (int i = 0; i < vertexData.size(); i++)
+	for (unsigned int i = 0; i < vertexData.size(); i++)
 	{
 		if (vertex == &vertexData[i])
 			return i;
 	}
+	return -1;
 }
 
 vec4 * Model::vertexAtViewportCoord(float x, float y, float z)
 {
-	for (int i = 0; i < vertexData.size(); i++)
+	for (unsigned int i = 0; i < vertexData.size(); i++)
 	{
 		if (x == NULL)
 		{

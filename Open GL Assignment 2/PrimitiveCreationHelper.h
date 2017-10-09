@@ -23,7 +23,7 @@ public:
 		case PrimitiveType::CONE:
 			return createCone();
 		default:
-			break;
+			return nullptr;
 		}
 	}
 private:
