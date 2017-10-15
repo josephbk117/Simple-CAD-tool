@@ -299,10 +299,24 @@ void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, in
 		{
 			if (currentlyHeldVertices.size() > 0)
 			{
-				for (int i = 0; i < currentlyHeldVertices.size(); i++)
+				if (currentlyHeldVertices.size() == 2)
 				{
-					unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
-					activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
+					//extrude as usual but then connect the two newly created vertices
+					unsigned int lol = 0;
+					for (int i = 0; i < currentlyHeldVertices.size(); i++)
+					{
+						unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
+						activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
+					}
+					activeModel->addVertexFlowSplitPair(activeModel->getVertexCount() - 1, activeModel->getVertexCount() - 2);
+				}
+				else
+				{
+					for (int i = 0; i < currentlyHeldVertices.size(); i++)
+					{
+						unsigned int indexOfVertex = activeModel->getIndexOfVertex(currentlyHeldVertices[i]);
+						activeModel->addVertex(vec3(currentlyHeldVertices[i]->x, currentlyHeldVertices[i]->y, currentlyHeldVertices[i]->z), indexOfVertex);
+					}
 				}
 				activeModel->updateMeshData();
 				currentInteractionMode = InteractionModes::ADDING_VERTICES;

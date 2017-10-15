@@ -110,7 +110,7 @@ void Model::setVerticesAsSelected(std::vector<vec4 *> vertices)
 {
 	if (vertices.size() <= 0)
 	{
-		for (int i = 0; i < vertexData.size(); i++)
+		for (unsigned int i = 0; i < vertexData.size(); i++)
 			vertexData[i].w = 0.0f;
 	}
 	for (int i = 0; i < vertexData.size(); i++)
@@ -222,8 +222,7 @@ void Model::addVertex(const vec3 &vertexPosition)
 void Model::addVertex(const vec3 & vertexPosition, unsigned int indexToPlaceVertex)
 {
 	vertexData.push_back(vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 0.0));
-	vertexSections.push_back(indexToPlaceVertex);
-	vertexSections.push_back(vertexData.size() - 1);
+	addVertexFlowSplitPair(indexToPlaceVertex, vertexData.size() - 1);
 }
 
 void Model::addVertex(float x, float y, float z)
